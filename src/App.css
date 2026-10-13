@@ -1,0 +1,276 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Inter:wght@700;900&display=swap');
+
+:root {
+  --color-parchment: #EAE1CF;
+  --color-ink: #292B27;
+  --color-deep-olive: #65734F;
+  --color-olive: #809064;
+  --color-light-olive: #9EA982;
+  --color-ban-red: #A82B24;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: #1c1e1a;
+  background-image: 
+    radial-gradient(circle at 50% 15%, rgba(101, 115, 79, 0.35) 0%, transparent 60%),
+    radial-gradient(circle at 10% 80%, rgba(41, 43, 39, 0.9) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(41, 43, 39, 0.9) 0%, transparent 50%),
+    linear-gradient(rgba(234, 225, 207, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234, 225, 207, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+  background-attachment: fixed;
+  font-family: 'Inter', 'Cairo', sans-serif;
+  color: var(--color-ink);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 650px;
+  height: 620px;
+  background: 
+    radial-gradient(circle, transparent 30%, rgba(101, 115, 79, 0.05) 31%, rgba(101, 115, 79, 0.05) 33%, transparent 34%),
+    radial-gradient(circle, transparent 50%, rgba(101, 115, 79, 0.04) 51%, rgba(101, 115, 79, 0.04) 53%, transparent 54%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.overlay-wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  padding: 0 10px 10px 10px;
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+}
+
+/* ضبط حواف وتنسيق الهيكل الرئيسي مع تقليل الحواف البيضاء الفارغة */
+.overlay-header {
+  position: relative;
+  width: 100%;
+  background-color: var(--color-parchment);
+  border: 4px solid var(--color-ink);
+  padding: 12px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: flex-end;
+  gap: 15px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65);
+}
+
+.corner-decor {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 3px solid var(--color-ink);
+}
+.top-left { top: 4px; left: 4px; border-right: none; border-bottom: none; }
+.top-right { top: 4px; right: 4px; border-left: none; border-bottom: none; }
+.bottom-left { bottom: 4px; left: 4px; border-right: none; border-top: none; }
+.bottom-right { bottom: 4px; right: 4px; border-left: none; border-top: none; }
+
+.team-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.team-left { align-items: flex-start; }
+.team-right { align-items: flex-end; }
+
+.team-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.team-logo-placeholder {
+  width: 55px;
+  height: 55px;
+  background-color: var(--color-ink);
+  border: 3px solid var(--color-deep-olive);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-text {
+  color: var(--color-parchment);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.team-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.text-right { align-items: flex-end; }
+
+.team-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--color-ink);
+  letter-spacing: 1px;
+}
+
+.first-pick-badge {
+  font-size: 11px;
+  background: var(--color-deep-olive);
+  color: var(--color-parchment);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 800;
+  width: max-content;
+}
+
+.team-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.picks-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.team-left .picks-group { align-items: flex-start; }
+.team-right .picks-group { align-items: flex-end; }
+
+.section-label {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--color-deep-olive);
+  letter-spacing: 1px;
+}
+
+.slots-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.stack-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.bans-on-top {
+  display: flex;
+  gap: 6px;
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+/* ================= تكبير ضخم جداً لكروت الاختيارات (PICKS) ================= */
+.pick-slot {
+  width: 135px;      /* زيادة العرض إلى 135px ليملأ المساحة العرضية */
+  height: 188px;     /* زيادة الارتفاع الضخم إلى 185px لتغطية الفراغ العمودي */
+  border: 3px dashed var(--color-olive);
+  background: rgba(41, 43, 39, 0.05);
+  color: var(--color-deep-olive);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+/* ================= تكبير كروت الممنوعين (BANS) فوق الخانة 6 ================= */
+.mini-ban {
+  width: 64px;       /* زيادة عرض كرت البان إلى 64px */
+  height: 80px;      /* زيادة الارتفاع إلى 56px */
+  border: 2.5px dashed var(--color-ban-red);
+  background: rgba(168, 43, 36, 0.08);
+  color: var(--color-ban-red);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* القسم الأوسط */
+.match-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  border-left: 2px solid var(--color-light-olive);
+  border-right: 2px solid var(--color-light-olive);
+  align-self: center;
+}
+
+.branding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.brand-logo-icon {
+  width: 70px;
+  height: 50px;
+}
+
+.brand-title {
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.brand-ar { color: var(--color-deep-olive); }
+
+.score-board {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.score-num {
+  font-size: 36px;
+  font-weight: 900;
+}
+
+.diamond-accent {
+  color: var(--color-deep-olive);
+  font-size: 14px;
+}
+
+.match-type {
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--color-deep-olive);
+  letter-spacing: 0.5px;
+}
+/* تنسيق الشعار الرسمي من الصورة */
+.official-logo {
+  height: 244px;             /* ارتفاع مناسب للوجو لإبراز التفاصيل والخط */
+  width: auto;
+  object-fit: contain;
+  mix-blend-mode: multiply; /* ينظف خلفية الصورة لتنسجم مع لون الورق البيج */
+  filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.15));
+}
