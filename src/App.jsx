@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import heroes from "./heroes.json";
 import { usePickEffects } from "./use-pick-effects";
+import { PICK_EFFECT_FADE_MS } from "./pick-effects";
 import {
   STORAGE_KEY,
   broadcastUrl,
@@ -154,23 +155,38 @@ function TeamMark({ team, number }) {
 function HeroSlot({ slot, index, type, active, flashing, onSelect }) {
   const hero = roster[slot.heroId];
   const image =
-    type === "ban"
-      ? hero?.criticalImage || hero?.image
-      : flashing
-        ? hero?.gloatImage || hero?.image
-        : hero?.image;
+    type === "ban" ? hero?.criticalImage || hero?.image : hero?.image;
   const content = (
     <>
       {hero ? (
-        <img
-          key={image}
-          src={image}
-          alt={hero.name}
-          onError={(e) => {
-            if (e.currentTarget.getAttribute("src") !== hero.image)
-              e.currentTarget.src = hero.image;
-          }}
-        />
+        <>
+          <img
+            className="hero-portrait-normal"
+            src={image}
+            alt={hero.name}
+            onError={(e) => {
+              if (e.currentTarget.getAttribute("src") !== hero.image)
+                e.currentTarget.src = hero.image;
+            }}
+          />
+          {type === "pick" && (
+            <>
+              <img
+                className="hero-portrait-gloat"
+                src={hero.gloatImage || hero.image}
+                alt=""
+                aria-hidden="true"
+                onError={(e) => {
+                  if (e.currentTarget.getAttribute("src") !== hero.image)
+                    e.currentTarget.src = hero.image;
+                }}
+              />
+              <span className="pick-glow" aria-hidden="true">
+                <span />
+              </span>
+            </>
+          )}
+        </>
       ) : (
         <span className="slot-empty">
           <span className="slot-symbol">{type === "ban" ? "⊘" : "✦"}</span>
@@ -180,7 +196,6 @@ function HeroSlot({ slot, index, type, active, flashing, onSelect }) {
         </span>
       )}
       {hero && <span className="hero-label">{hero.name}</span>}
-      {flashing && <span className="pick-flare" aria-hidden="true" />}
       {type === "ban" && slot.heroId && <span className="ban-slash" />}
       {active && (
         <span className="active-slot-label">
@@ -193,13 +208,19 @@ function HeroSlot({ slot, index, type, active, flashing, onSelect }) {
   return onSelect ? (
     <button
       className={cls}
+      style={{ "--pick-fade-duration": `${PICK_EFFECT_FADE_MS}ms` }}
       onClick={() => onSelect(slot)}
       aria-label={`Edit ${type} ${index + 1}: ${hero?.name || "empty"}`}
     >
       {content}
     </button>
   ) : (
-    <div className={cls}>{content}</div>
+    <div
+      className={cls}
+      style={{ "--pick-fade-duration": `${PICK_EFFECT_FADE_MS}ms` }}
+    >
+      {content}
+    </div>
   );
 }
 
@@ -1260,7 +1281,7 @@ export default function App() {
                   checked={config.pickEffects}
                   onChange={(v) => update("pickEffects", v)}
                   label="On-fire pick animation"
-                  hint="Show the hero’s gloat portrait and a flame glow for two seconds."
+                  hint="Show the hero’s gloat portrait with a light-blue glow for six seconds, then fade smoothly to normal."
                 />
                 <Toggle
                   checked={config.voiceLines}

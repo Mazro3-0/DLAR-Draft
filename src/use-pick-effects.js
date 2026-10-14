@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { createPickTracker, createVoicePlayer } from "./pick-effects.js";
+import {
+  createPickTracker,
+  createVoicePlayer,
+  createPickFlashController,
+} from "./pick-effects.js";
 import heroes from "./heroes.json";
 
 const roster = Object.fromEntries(heroes.map((hero) => [hero.id, hero]));
@@ -16,7 +20,7 @@ export function usePickEffects(
   const [soundBlocked, setSoundBlocked] = useState(false);
   const tracker = useRef(createPickTracker());
   const previousIdentity = useRef(identity);
-  const timers = useRef(new Map());
+  const flashController = useRef(null);
   const player = useRef(null);
   const audioRef = useRef(null);
 
@@ -26,11 +30,11 @@ export function usePickEffects(
       onBlocked: setSoundBlocked,
     });
     player.current = voice;
-    const pending = timers.current;
+    const flash = createPickFlashController({ onChange: setFlashes });
+    flashController.current = flash;
     return () => {
       voice.dispose();
-      pending.forEach(clearTimeout);
-      pending.clear();
+      flash.dispose();
     };
   }, []);
 
@@ -45,38 +49,24 @@ export function usePickEffects(
     if (previousIdentity.current !== identity) {
       previousIdentity.current = identity;
       tracker.current.reset();
-      timers.current.forEach(clearTimeout);
-      timers.current.clear();
-      setFlashes({});
+      flashController.current.reset();
       player.current.clear();
     }
+    if (!config.pickEffects) flashController.current.reset();
     const picks = tracker.current.observe(snapshot, {
       initial: initialSnapshots.current.has(snapshot),
     });
     for (const pick of picks) {
       const hero = roster[pick.heroId];
-      if (config.pickEffects) {
-        clearTimeout(timers.current.get(pick.id));
-        setFlashes((current) => ({ ...current, [pick.id]: pick.heroId }));
-        timers.current.set(
-          pick.id,
-          setTimeout(() => {
-            setFlashes((current) => {
-              const next = { ...current };
-              delete next[pick.id];
-              return next;
-            });
-            timers.current.delete(pick.id);
-          }, 2000),
-        );
-      }
+      if (config.pickEffects)
+        flashController.current.show(pick.id, pick.heroId);
       const lines = hero?.voiceLines || [];
       if (lines.length)
         player.current.enqueue(lines[Math.floor(Math.random() * lines.length)]);
     }
   }, [snapshot, identity, initialSnapshots, config.pickEffects]);
 
-  // Warm the small portrait variants before their first two-second appearance.
+  // Warm the variants before the first pick so the crossfade has no loading gap.
   useEffect(() => {
     const images = heroes.flatMap((hero) =>
       [hero.gloatImage, hero.criticalImage].filter(Boolean).map((src) => {

@@ -1,3 +1,44 @@
+export const PICK_EFFECT_DURATION_MS = 6000;
+export const PICK_EFFECT_FADE_MS = 900;
+
+// A replacement starts its own six-second window; an old timeout cannot clear it.
+export function createPickFlashController({
+  onChange,
+  schedule = setTimeout,
+  cancel = clearTimeout,
+} = {}) {
+  let flashes = {};
+  const timers = new Map();
+  function reset(notify = true) {
+    timers.forEach(({ timer }) => cancel(timer));
+    timers.clear();
+    const changed = Object.keys(flashes).length > 0;
+    flashes = {};
+    if (notify && changed) onChange({});
+  }
+  return {
+    show(id, heroId) {
+      cancel(timers.get(id)?.timer);
+      const token = {};
+      flashes = { ...flashes, [id]: heroId };
+      onChange(flashes);
+      const timer = schedule(() => {
+        if (timers.get(id)?.token !== token) return;
+        timers.delete(id);
+        const next = { ...flashes };
+        delete next[id];
+        flashes = next;
+        onChange(flashes);
+      }, PICK_EFFECT_DURATION_MS);
+      timers.set(id, { timer, token });
+    },
+    reset,
+    dispose() {
+      reset(false);
+    },
+  };
+}
+
 // The first state after joining/rejoining is a baseline, never a new pick.
 export function createPickTracker() {
   let previous = null;

@@ -1322,7 +1322,9 @@
   color: #7f8f67;
   background: #d6d8c6;
   border: 1px solid #aeb99d;
-  transition: box-shadow 0.3s;
+  transition:
+    box-shadow var(--pick-fade-duration, 900ms) ease,
+    border-color var(--pick-fade-duration, 900ms) ease;
 }
 .hero-slot.pick {
   height: 189px;
@@ -1332,6 +1334,16 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+.hero-slot .hero-portrait-gloat {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--pick-fade-duration, 900ms) ease-in-out;
+}
+.hero-slot.new-pick .hero-portrait-gloat {
+  opacity: 1;
 }
 .slot-empty {
   display: flex;
@@ -1365,6 +1377,7 @@
   text-overflow: ellipsis;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  z-index: 2;
 }
 .hero-slot.active {
   border: 3px solid #65734f;
@@ -1375,27 +1388,48 @@
   animation: turn-pulse 1.5s ease-in-out infinite;
 }
 .hero-slot.new-pick {
-  border-color: #d79843;
+  border-color: #90ffe3;
   animation: pick-arrival 0.4s ease-out both;
   box-shadow:
-    0 0 20px #df842378,
-    inset 0 0 18px #efa130;
+    0 0 10px #90ffe380,
+    0 0 26px #8cdfff66,
+    inset 0 0 16px #90ffe354;
 }
-.hero-slot.new-pick img {
+.hero-slot.new-pick .hero-portrait-gloat {
   animation: portrait-arrival 0.45s ease-out both;
 }
-.pick-flare {
+/* Deadlock's kill-streak portrait backing uses #90FFE3 in hero_badge.css. */
+.pick-glow {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--pick-fade-duration, 900ms) ease-in-out;
   background:
-    radial-gradient(ellipse at 15% 105%, #ffbc44b8, transparent 45%),
-    radial-gradient(ellipse at 90% 110%, #f06a28b0, transparent 50%);
+    linear-gradient(
+      90deg,
+      #90ffe332,
+      transparent 24%,
+      transparent 76%,
+      #90ffe332
+    ),
+    radial-gradient(ellipse at 50% 0%, #a3efff5c, transparent 62%);
   mix-blend-mode: screen;
-  animation: flame-flicker 0.45s ease-in-out infinite alternate;
 }
-.new-pick .hero-label {
-  z-index: 1;
+.pick-glow > span {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 0% 45%, #90ffe3a6, transparent 45%),
+    radial-gradient(ellipse at 100% 45%, #90ffe3a6, transparent 45%),
+    radial-gradient(ellipse at 50% 100%, #a3efff99, transparent 60%);
+  filter: blur(5px);
+}
+.new-pick .pick-glow {
+  opacity: 1;
+}
+.new-pick .pick-glow > span {
+  animation: cyan-glow-breathe 1.5s ease-in-out infinite alternate;
 }
 @keyframes turn-pulse {
   0%,
@@ -1419,21 +1453,19 @@
 @keyframes portrait-arrival {
   from {
     transform: scale(1.12);
-    filter: brightness(1.5);
+    filter: brightness(1.2);
   }
   to {
     transform: scale(1);
     filter: brightness(1);
   }
 }
-@keyframes flame-flicker {
+@keyframes cyan-glow-breathe {
   from {
-    opacity: 0.55;
-    transform: scaleY(0.9);
+    opacity: 0.25;
   }
   to {
-    opacity: 1;
-    transform: scaleY(1.1);
+    opacity: 0.55;
   }
 }
 .hero-slot.active .slot-symbol {
