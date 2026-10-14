@@ -20,11 +20,21 @@ Logos support PNG, JPEG, and WebP files under 5 MB, resized locally to at most 2
 
 Disconnect & use manual mode preserves the last live selections. Click a hero slot to choose or clear a hero. Duplicate selections are prevented. Manual broadcast URLs carry the current selections; copy a new URL after changing them. Exiting demo clears the sample selections.
 
+## Pick effects and audio
+
+New picks show the hero's official gloat/on-fire portrait with a flame glow for two seconds, then return to the bundled normal card. Ban slots use critical portraits. The active team's mark and current slot pulse while its turn is active; paused and completed drafts stop the pulse. Team 2's picks, bans, and heading fill from the right. Reduced-motion preferences disable CSS animation.
+
+One genuine game selection voice line plays for each new pick. The first state after joining or reconnecting primes the draft without replaying old selections; bans and timer updates are silent. Rapid picks queue their voice lines rather than playing over each other. Settings include voice enable/disable, volume, and the on-fire effect, and are included in OBS links and settings backups.
+
+The studio starts muted independently of the broadcast. Choose **Load demo → Preview sound → Test pick** to test. When all demo picks are filled, Test pick resets the sample. In OBS, enable **Control audio via OBS** on the Browser Source and check its mixer level. A normal browser may require clicking **Enable sound** after its autoplay policy blocks a line; future selections then play. Old blocked lines are discarded.
+
+The 42 current heroes have selection clips. Normal cards are bundled; gloat and critical variants use the Deadlock API asset bucket, and voices use game-audio libraries at [Pauselock](https://pauselock.net/voicelines) and [VLViewer](https://deadlock.vlviewer.com/). These remote assets require internet access. Failed variant images fall back to the bundled normal card; failed audio clips are skipped. The hero refresh script preserves existing voice mappings and reports new heroes that need selection clips.
+
 ## Existing Vercel project
 
 Keep the friend’s current repository and Vercel project. Review and replace the app files with this version, then push through the existing Git workflow. Use the folder containing `package.json` as the project root. The supplied `vercel.json` sets **Vite**, build command **npm run build**, and output directory **dist**. This follows [Vercel’s Vite deployment workflow](https://vercel.com/docs/frameworks/frontend/vite).
 
-No Vercel environment variables or backend service are required for this version. The draft view uses query parameters on `/`, so no additional SPA route rewrites are needed. Nothing was deployed or changed in the existing Vercel account during this work.
+No Vercel environment variables or backend service are required for this version. The draft view uses query parameters on `/`, so no additional SPA route rewrites are needed. Use a branch preview to test changes before merging into the production branch.
 
 ## Develop and build
 
@@ -59,15 +69,17 @@ A future shared version can add authenticated admin accounts, persistent match r
 ## Verification
 
 - Production build completed successfully.
-- Seven automated tests cover source URL validation, Arabic branding and manual-state URL round trips, participant-data removal, dynamic ban counts, safe logo inputs, spectator-only messages, timer messages, reconnection, and room errors.
+- Twelve automated tests cover source URL validation, Arabic branding and manual-state URL round trips, participant-data removal, dynamic ban counts, safe logo inputs, spectator-only messages, timer messages, reconnection baselines, room errors, pick-event deduplication, sequential audio, autoplay recovery, volume/URL persistence, and complete hero effect metadata.
 - Browser checks confirmed a live spectator state from room VBWWGH17. It was ACTIVE at the first ban, with no hero selections; no source draft decisions were changed. Changing picks and timer payloads were exercised with protocol fixtures.
 - Desktop checks covered demo artwork, Arabic names, score edits, logo upload/removal, manual hero selection, a separate broadcast view, and transparent document/body/canvas backgrounds.
+- Effect checks confirmed mirrored picks/bans and heading, critical ban portraits, a two-second gloat-to-normal transition, muted studio preview, sound activation, and actual pick audio playback in a separate browser broadcast, including the newer Solomon voice.
 - A 390-pixel phone viewport was verified with no horizontal overflow; a full-page phone screenshot is included. OBS itself and a Vercel deployment were not tested.
 
 ## Source map
 
 - `src/App.jsx`: admin UI, broadcast renderer, local settings, image uploads, and backup tools.
 - `src/draft.js`: data normalization, link encoding, room parsing, and spectator transport.
+- `src/pick-effects.js` / `src/use-pick-effects.js`: new-selection tracking, effect timing, portrait preloading, and queued voice playback.
 - `src/App.css` / `src/index.css`: layout and brand tokens.
 - `src/heroes.json` / `public/heroes/`: local hero catalogue and cards.
 - `scripts/serve.mjs`: dependency-free local build preview.
