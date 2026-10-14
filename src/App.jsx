@@ -152,6 +152,53 @@ function TeamMark({ team, number }) {
     </span>
   );
 }
+function PickFlames() {
+  return (
+    <span className="pick-flames" aria-hidden="true">
+      {["top", "right", "bottom", "left"].map((edge, edgeIndex) => (
+        <span className={`pick-flame-edge ${edge}`} key={edge}>
+          {Array.from({ length: 6 }, (_, index) => (
+            <svg
+              className="pick-flame"
+              key={index}
+              viewBox={
+                edge === "left" || edge === "right" ? "0 0 40 24" : "0 0 24 40"
+              }
+              preserveAspectRatio="none"
+              focusable="false"
+              style={{
+                "--flame-delay": `${-(index * 0.23 + edgeIndex * 0.17)}s`,
+                "--flame-duration": `${0.7 + (index % 3) * 0.19}s`,
+              }}
+            >
+              <g
+                transform={
+                  edge === "left"
+                    ? "translate(0 24) rotate(-90)"
+                    : edge === "right"
+                      ? "translate(40 0) rotate(90)"
+                      : edge === "bottom"
+                        ? "translate(24 40) rotate(180)"
+                        : undefined
+                }
+              >
+                <path
+                  className="flame-outer"
+                  d="M3 40C-2 31 8 28 6 19C12 23 12 11 17 1C16 14 24 17 20 25C28 30 25 37 21 40Z"
+                />
+                <path
+                  className="flame-core"
+                  d="M8 40C5 34 14 30 13 22C19 28 15 30 19 34C21 37 18 40 17 40Z"
+                />
+              </g>
+            </svg>
+          ))}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 function HeroSlot({ slot, index, type, active, flashing, onSelect }) {
   const hero = roster[slot.heroId];
   const image =
@@ -160,32 +207,32 @@ function HeroSlot({ slot, index, type, active, flashing, onSelect }) {
     <>
       {hero ? (
         <>
-          <img
-            className="hero-portrait-normal"
-            src={image}
-            alt={hero.name}
-            onError={(e) => {
-              if (e.currentTarget.getAttribute("src") !== hero.image)
-                e.currentTarget.src = hero.image;
-            }}
-          />
-          {type === "pick" && (
-            <>
-              <img
-                className="hero-portrait-gloat"
-                src={hero.gloatImage || hero.image}
-                alt=""
-                aria-hidden="true"
-                onError={(e) => {
-                  if (e.currentTarget.getAttribute("src") !== hero.image)
-                    e.currentTarget.src = hero.image;
-                }}
-              />
-              <span className="pick-glow" aria-hidden="true">
-                <span />
-              </span>
-            </>
-          )}
+          <span className="hero-portrait-frame">
+            <img
+              className="hero-portrait-normal"
+              src={image}
+              alt={hero.name}
+              onError={(e) => {
+                if (e.currentTarget.getAttribute("src") !== hero.image)
+                  e.currentTarget.src = hero.image;
+              }}
+            />
+            {type === "pick" && (
+              <>
+                <img
+                  className="hero-portrait-gloat"
+                  src={hero.gloatImage || hero.image}
+                  alt=""
+                  aria-hidden="true"
+                  onError={(e) => {
+                    if (e.currentTarget.getAttribute("src") !== hero.image)
+                      e.currentTarget.src = hero.image;
+                  }}
+                />
+              </>
+            )}
+          </span>
+          {type === "pick" && <PickFlames />}
         </>
       ) : (
         <span className="slot-empty">

@@ -22,9 +22,9 @@ Disconnect & use manual mode preserves the last live selections. Click a hero sl
 
 ## Pick effects and audio
 
-New picks show the hero's official gloat/on-fire portrait with a light-blue/cyan glow for six seconds, then crossfade to the bundled normal card over 0.9 seconds. Both portraits stay mounted during the fade, so there is no image swap or loading flash. The glow, card border, and shadow also fade smoothly.
+New picks show the hero's official gloat/on-fire portrait with animated light-blue flames around all four outer edges for six seconds, then crossfade to the bundled normal card over 0.9 seconds. Both portraits stay mounted during the fade, so there is no image swap or loading flash. The flames, card border, and outer shadow also fade smoothly. Portrait colors stay unchanged: the effect has no color wash or inward glow over the hero artwork.
 
-The glow uses the game's `#90FFE3` kill-streak portrait color from [Deadlock's extracted HUD styling](https://github.com/SteamTracking/GameTracking-Deadlock/blob/master/game/citadel/pak01_dir/panorama/styles/hero_badge.css). Its soft animated halo is recreated in CSS because the game's original `ui_topbar_killstreak_stylized.vpcf` particle runs in the Source 2 engine.
+The blue flame effect is recreated with SVG shapes and CSS flicker, inspired by [Deadlock's extracted HUD styling](https://github.com/SteamTracking/GameTracking-Deadlock/blob/master/game/citadel/pak01_dir/panorama/styles/hero_badge.css). The game's original `ui_topbar_killstreak_stylized.vpcf` particle runs in the Source 2 engine.
 
 Ban slots use critical portraits. The active team's mark and current slot pulse while its turn is active; paused and completed drafts stop the pulse. Team 2's picks, bans, and heading fill from the right. Reduced-motion preferences disable CSS animation.
 
