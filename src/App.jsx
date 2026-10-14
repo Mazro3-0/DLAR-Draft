@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import heroes from "./heroes.json";
 import { usePickEffects } from "./use-pick-effects";
 import { PICK_EFFECT_FADE_MS } from "./pick-effects";
-import { createPickSparks } from "./pick-sparks";
+import { createPickFlame } from "./pick-sparks";
 import {
   STORAGE_KEY,
   broadcastUrl,
@@ -153,11 +153,11 @@ function TeamMark({ team, number }) {
     </span>
   );
 }
-function PickSparks({ active }) {
+function PickFlame({ active }) {
   const canvas = useRef(null);
   const renderer = useRef(null);
   useEffect(() => {
-    const next = createPickSparks(canvas.current, {
+    const next = createPickFlame(canvas.current, {
       fadeDurationMs: PICK_EFFECT_FADE_MS,
     });
     renderer.current = next;
@@ -166,7 +166,9 @@ function PickSparks({ active }) {
   useEffect(() => {
     renderer.current?.setActive(active);
   }, [active]);
-  return <canvas ref={canvas} className="pick-sparks" aria-hidden="true" />;
+  return (
+    <canvas ref={canvas} className="pick-flame-effect" aria-hidden="true" />
+  );
 }
 
 function HeroSlot({ slot, index, type, active, flashing, onSelect }) {
@@ -202,7 +204,7 @@ function HeroSlot({ slot, index, type, active, flashing, onSelect }) {
               </>
             )}
           </span>
-          {type === "pick" && <PickSparks active={flashing} />}
+          {type === "pick" && <PickFlame active={flashing} />}
         </>
       ) : (
         <span className="slot-empty">
