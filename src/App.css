@@ -1328,6 +1328,14 @@
 }
 .hero-slot.pick {
   height: 189px;
+  overflow: visible;
+}
+.hero-portrait-frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 .hero-slot img {
   width: 100%;
@@ -1388,48 +1396,93 @@
   animation: turn-pulse 1.5s ease-in-out infinite;
 }
 .hero-slot.new-pick {
-  border-color: #90ffe3;
+  border-color: #98e6ff;
   animation: pick-arrival 0.4s ease-out both;
   box-shadow:
-    0 0 10px #90ffe380,
-    0 0 26px #8cdfff66,
-    inset 0 0 16px #90ffe354;
+    0 0 8px #7bddff70,
+    0 0 18px #399fe940;
 }
 .hero-slot.new-pick .hero-portrait-gloat {
   animation: portrait-arrival 0.45s ease-out both;
 }
-/* Deadlock's kill-streak portrait backing uses #90FFE3 in hero_badge.css. */
-.pick-glow {
+/* Flames sit outside the portrait frame; no color overlay touches the artwork. */
+.pick-flames {
   position: absolute;
   inset: 0;
   pointer-events: none;
   opacity: 0;
-  transition: opacity var(--pick-fade-duration, 900ms) ease-in-out;
-  background:
-    linear-gradient(
-      90deg,
-      #90ffe332,
-      transparent 24%,
-      transparent 76%,
-      #90ffe332
-    ),
-    radial-gradient(ellipse at 50% 0%, #a3efff5c, transparent 62%);
-  mix-blend-mode: screen;
+  visibility: hidden;
+  z-index: 3;
+  transition:
+    opacity var(--pick-fade-duration, 900ms) ease-in-out,
+    visibility 0s var(--pick-fade-duration, 900ms);
 }
-.pick-glow > span {
+.pick-flame-edge {
   position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 0% 45%, #90ffe3a6, transparent 45%),
-    radial-gradient(ellipse at 100% 45%, #90ffe3a6, transparent 45%),
-    radial-gradient(ellipse at 50% 100%, #a3efff99, transparent 60%);
-  filter: blur(5px);
+  display: flex;
+  filter: drop-shadow(0 0 2px #70dfffaa);
 }
-.new-pick .pick-glow {
+.pick-flame-edge.top,
+.pick-flame-edge.bottom {
+  left: 0;
+  right: 0;
+  height: 20px;
+}
+.pick-flame-edge.top {
+  bottom: 100%;
+}
+.pick-flame-edge.bottom {
+  top: 100%;
+}
+.pick-flame-edge.left,
+.pick-flame-edge.right {
+  top: 0;
+  bottom: 0;
+  width: 13px;
+  flex-direction: column;
+}
+.pick-flame-edge.left {
+  right: 100%;
+}
+.pick-flame-edge.right {
+  left: 100%;
+}
+.pick-flame {
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  animation: flame-flicker-y var(--flame-duration) ease-in-out
+    var(--flame-delay) infinite alternate;
+}
+.top .pick-flame {
+  transform-origin: center bottom;
+}
+.bottom .pick-flame {
+  transform-origin: center top;
+}
+.left .pick-flame,
+.right .pick-flame {
+  animation-name: flame-flicker-x;
+}
+.left .pick-flame {
+  transform-origin: right center;
+}
+.right .pick-flame {
+  transform-origin: left center;
+}
+.flame-outer {
+  fill: #3eabef;
+  fill-opacity: 0.8;
+}
+.flame-core {
+  fill: #c3f5ff;
+}
+.new-pick .pick-flames {
   opacity: 1;
-}
-.new-pick .pick-glow > span {
-  animation: cyan-glow-breathe 1.5s ease-in-out infinite alternate;
+  visibility: visible;
+  transition-delay: 0s;
 }
 @keyframes turn-pulse {
   0%,
@@ -1453,19 +1506,37 @@
 @keyframes portrait-arrival {
   from {
     transform: scale(1.12);
-    filter: brightness(1.2);
   }
   to {
     transform: scale(1);
-    filter: brightness(1);
   }
 }
-@keyframes cyan-glow-breathe {
-  from {
-    opacity: 0.25;
+@keyframes flame-flicker-y {
+  0% {
+    transform: scaleY(0.45) skewX(-9deg);
+    opacity: 0.65;
   }
-  to {
-    opacity: 0.55;
+  55% {
+    transform: scaleY(0.95) skewX(7deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(0.65) skewX(-4deg);
+    opacity: 0.8;
+  }
+}
+@keyframes flame-flicker-x {
+  0% {
+    transform: scaleX(0.5) skewY(-8deg);
+    opacity: 0.65;
+  }
+  55% {
+    transform: scaleX(0.9) skewY(6deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(0.6) skewY(-4deg);
+    opacity: 0.8;
   }
 }
 .hero-slot.active .slot-symbol {
