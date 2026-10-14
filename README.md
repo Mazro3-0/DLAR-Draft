@@ -22,9 +22,9 @@ Disconnect & use manual mode preserves the last live selections. Click a hero sl
 
 ## Pick effects and audio
 
-New picks show the hero's official gloat/on-fire portrait with animated light-blue flames around all four outer edges for six seconds, then crossfade to the bundled normal card over 0.9 seconds. Both portraits stay mounted during the fade, so there is no image swap or loading flash. The flames, card border, and outer shadow also fade smoothly. Portrait colors stay unchanged: the effect has no color wash or inward glow over the hero artwork.
+New picks show the hero's official gloat/on-fire portrait with the approved Rising sparks effect at intensity 1.5: small light-blue embers rise outside the frame, with a subtle glow around the outer edges. After six seconds, both the sparks and the gloat portrait fade over 0.9 seconds. Both portraits stay mounted during the fade, so there is no image swap or loading flash. The renderer clips out the portrait interior, preserving the hero's original colors.
 
-The blue flame effect is recreated with SVG shapes and CSS flicker, inspired by [Deadlock's extracted HUD styling](https://github.com/SteamTracking/GameTracking-Deadlock/blob/master/game/citadel/pak01_dir/panorama/styles/hero_badge.css). The game's original `ui_topbar_killstreak_stylized.vpcf` particle runs in the Source 2 engine.
+The sparks use a browser canvas, matching the selected design preview. Particles keep moving during the fade and stop rendering once it finishes; unmounting cancels rendering and removes the motion-preference listener. Reduced-motion preferences show static sparks. This is a web recreation: the game's original `ui_topbar_killstreak_stylized.vpcf` particle runs in the Source 2 engine.
 
 Ban slots use critical portraits. The active team's mark and current slot pulse while its turn is active; paused and completed drafts stop the pulse. Team 2's picks, bans, and heading fill from the right. Reduced-motion preferences disable CSS animation.
 
@@ -85,6 +85,7 @@ A future shared version can add authenticated admin accounts, persistent match r
 - `src/draft.js`: data normalization, link encoding, room parsing, and spectator transport.
 - `src/pick-effects.js` / `src/use-pick-effects.js`: new-selection tracking, effect timing, portrait preloading, and queued voice playback.
 - `src/App.css` / `src/index.css`: layout and brand tokens.
+- `src/pick-sparks.js`: the approved rising-ember renderer with a transparent portrait interior.
 - `src/heroes.json` / `public/heroes/`: local hero catalogue and cards.
 - `scripts/serve.mjs`: dependency-free local build preview.
 - `scripts/update-heroes.mjs`: refresh the hero assets.
