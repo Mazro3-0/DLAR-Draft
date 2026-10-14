@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import heroes from "./heroes.json";
+import { usePickEffects } from "./use-pick-effects";
 import {
   STORAGE_KEY,
   broadcastUrl,
@@ -150,12 +151,26 @@ function TeamMark({ team, number }) {
     </span>
   );
 }
-function HeroSlot({ slot, index, type, active, onSelect }) {
+function HeroSlot({ slot, index, type, active, flashing, onSelect }) {
   const hero = roster[slot.heroId];
+  const image =
+    type === "ban"
+      ? hero?.criticalImage || hero?.image
+      : flashing
+        ? hero?.gloatImage || hero?.image
+        : hero?.image;
   const content = (
     <>
       {hero ? (
-        <img src={hero.image} alt={hero.name} />
+        <img
+          key={image}
+          src={image}
+          alt={hero.name}
+          onError={(e) => {
+            if (e.currentTarget.getAttribute("src") !== hero.image)
+              e.currentTarget.src = hero.image;
+          }}
+        />
       ) : (
         <span className="slot-empty">
           <span className="slot-symbol">{type === "ban" ? "⊘" : "✦"}</span>
@@ -165,6 +180,7 @@ function HeroSlot({ slot, index, type, active, onSelect }) {
         </span>
       )}
       {hero && <span className="hero-label">{hero.name}</span>}
+      {flashing && <span className="pick-flare" aria-hidden="true" />}
       {type === "ban" && slot.heroId && <span className="ban-slash" />}
       {active && (
         <span className="active-slot-label">
@@ -173,7 +189,7 @@ function HeroSlot({ slot, index, type, active, onSelect }) {
       )}
     </>
   );
-  const cls = `hero-slot ${type} ${slot.heroId ? "filled" : ""} ${active ? "active" : ""}`;
+  const cls = `hero-slot ${type} ${slot.heroId ? "filled" : ""} ${active ? "active" : ""} ${flashing ? "new-pick" : ""}`;
   return onSelect ? (
     <button
       className={cls}
@@ -187,7 +203,14 @@ function HeroSlot({ slot, index, type, active, onSelect }) {
   );
 }
 
-function DraftBoard({ config, snapshot, mode, status, onSelect }) {
+function DraftBoard({
+  config,
+  snapshot,
+  mode,
+  status,
+  flashes = {},
+  onSelect,
+}) {
   const current = snapshot?.steps?.[snapshot.currentStepIndex];
   const active = snapshot?.status === "ACTIVE" ? current : null;
   const firstPick =
@@ -227,7 +250,6 @@ function DraftBoard({ config, snapshot, mode, status, onSelect }) {
       <div className="storm storm-two" />
       {config.layout === "board" && (
         <div className="broadcast-heading">
-          <span className="tiny">COMMUNITY • PLAY • COMPETE</span>
           <h2>{config.event}</h2>
           <span className="ornament">──────── ✦ ────────</span>
           <span className="broadcast-round">
@@ -241,7 +263,10 @@ function DraftBoard({ config, snapshot, mode, status, onSelect }) {
         <span className="frame-corner c-bl" />
         <span className="frame-corner c-br" />
         {[1, 2].map((number) => (
-          <section className={`draft-team side-${number}`} key={number}>
+          <section
+            className={`draft-team side-${number} ${active?.teamNumber === number ? "taking-turn" : ""}`}
+            key={number}
+          >
             <div className="draft-team-header">
               <TeamMark team={teams[number - 1]} number={number} />
               <div>
@@ -253,7 +278,7 @@ function DraftBoard({ config, snapshot, mode, status, onSelect }) {
               <strong className="team-score">{teams[number - 1].score}</strong>
             </div>
             <div className="draft-group-label">
-              HERO PICKS{" "}
+              <b>HERO PICKS</b>
               <span>
                 {
                   teamSlots(snapshot, number, "pick").filter((s) => s.heroId)
@@ -270,6 +295,9 @@ function DraftBoard({ config, snapshot, mode, status, onSelect }) {
                   type="pick"
                   key={slot.id}
                   active={active?.id === slot.id}
+                  flashing={
+                    config.pickEffects && flashes[slot.id] === slot.heroId
+                  }
                   onSelect={onSelect}
                 />
               ))}
@@ -370,7 +398,9 @@ function Toggle({ checked, onChange, label, hint }) {
 function Modal({ title, onClose, children }) {
   const ref = useRef(null);
   const close = useRef(onClose);
-  close.current = onClose;
+  useEffect(() => {
+    close.current = onClose;
+  }, [onClose]);
   useEffect(() => {
     const before = document.activeElement;
     ref.current?.focus();
@@ -451,6 +481,21 @@ export default function App() {
           ? saved.snapshot
           : blankDraft(),
   );
+  const initialSnapshots = useRef(new WeakSet());
+  const {
+    flashes,
+    previewSound,
+    soundBlocked,
+    enableSound,
+    togglePreviewSound,
+    audioRef,
+  } = usePickEffects(
+    snapshot,
+    `${mode}:${code}`,
+    initialSnapshots,
+    config,
+    isOverlay,
+  );
   const [status, setStatus] = useState({
     state: "idle",
     message: "Paste a draft link to connect.",
@@ -481,7 +526,8 @@ export default function App() {
       code,
       {
         onStatus: setStatus,
-        onSnapshot: (next) => {
+        onSnapshot: (next, { initial }) => {
+          if (initial) initialSnapshots.current.add(next);
           const old = last.current;
           const changes = next.steps.filter(
             (s) =>
@@ -525,8 +571,10 @@ export default function App() {
         JSON.stringify({ config, code, mode, snapshot }),
       );
     } catch {
-      setSaveError(
-        "Browser storage is full. Export a backup to keep your settings.",
+      queueMicrotask(() =>
+        setSaveError(
+          "Browser storage is full. Export a backup to keep your settings.",
+        ),
       );
     }
   }, [config, code, mode, snapshot]);
@@ -614,6 +662,28 @@ export default function App() {
     });
     setToast("Manual mode enabled. Click a hero slot in the preview.");
   };
+  const testPick = () => {
+    const next = snapshot.steps.findIndex((step) => !step.heroId);
+    if (next < 0) {
+      const reset = makeDemo();
+      initialSnapshots.current.add(reset);
+      setSnapshot(reset);
+      setToast("Demo reset. Press Test pick again.");
+      return;
+    }
+    const used = new Set(snapshot.steps.map((step) => step.heroId));
+    const hero = heroes.find((hero) => !used.has(hero.id));
+    const steps = snapshot.steps.map((step, index) =>
+      index === next ? { ...step, heroId: hero.id } : step,
+    );
+    const currentStepIndex = steps.findIndex((step) => !step.heroId);
+    setSnapshot({
+      ...snapshot,
+      steps,
+      currentStepIndex: currentStepIndex < 0 ? steps.length : currentStepIndex,
+      status: currentStepIndex < 0 ? "COMPLETED" : "ACTIVE",
+    });
+  };
   const selectHero = (heroId) => {
     setSnapshot((s) => {
       const d = s || blankDraft();
@@ -686,6 +756,7 @@ export default function App() {
         className={`overlay-page ${config.transparent ? "transparent" : ""}`}
         ref={stageRef}
       >
+        <audio ref={audioRef} hidden preload="auto" />
         <div
           className="overlay-scaled"
           style={{ transform: `scale(${scale})` }}
@@ -695,13 +766,23 @@ export default function App() {
             snapshot={snapshot}
             mode={mode}
             status={status}
+            flashes={flashes}
           />
         </div>
+        {config.voiceLines && soundBlocked && (
+          <button
+            className="enable-broadcast-sound button primary"
+            onClick={enableSound}
+          >
+            Enable sound
+          </button>
+        )}
       </main>
     );
 
   return (
     <div className="studio-app">
+      <audio ref={audioRef} hidden preload="auto" />
       <aside className="sidebar">
         <a className="sidebar-brand" href="/">
           <Emblem />
@@ -735,7 +816,6 @@ export default function App() {
           <span className="sidebar-star">✦</span>
           <strong>Made for the community.</strong>
           <span lang="ar">مجتمع ديدلوك العربي</span>
-          <small>COMMUNITY • PLAY • COMPETE</small>
           <div className="sidebar-admin">
             <span>AR</span>
             <div>
@@ -812,6 +892,7 @@ export default function App() {
                     snapshot={snapshot}
                     mode={mode}
                     status={status}
+                    flashes={flashes}
                     onSelect={
                       mode === "manual"
                         ? (slot) => {
@@ -828,13 +909,27 @@ export default function App() {
                   <i />
                   1920 × 1080 <b>·</b> OBS Browser Source
                 </span>
-                <button
-                  className="text-button"
-                  onClick={mode === "demo" ? manual : demo}
-                >
-                  <Icon name={mode === "demo" ? "reset" : "play"} size={14} />
-                  {mode === "demo" ? "Exit demo" : "Load demo"}
-                </button>
+                <div className="preview-actions">
+                  <button
+                    className="text-button"
+                    disabled={!config.voiceLines}
+                    onClick={togglePreviewSound}
+                  >
+                    {previewSound ? "Mute preview" : "Preview sound"}
+                  </button>
+                  {mode === "demo" && (
+                    <button className="text-button" onClick={testPick}>
+                      Test pick
+                    </button>
+                  )}
+                  <button
+                    className="text-button"
+                    onClick={mode === "demo" ? manual : demo}
+                  >
+                    <Icon name={mode === "demo" ? "reset" : "play"} size={14} />
+                    {mode === "demo" ? "Exit demo" : "Load demo"}
+                  </button>
+                </div>
               </footer>
             </section>
             <aside className="connection-panel">
@@ -1159,6 +1254,43 @@ export default function App() {
                 </div>
                 <small>PARCHMENT & OLIVE · DEADLOCK AR IDENTITY</small>
               </section>
+              <section className="settings-panel">
+                <h2>Pick effects & sound</h2>
+                <Toggle
+                  checked={config.pickEffects}
+                  onChange={(v) => update("pickEffects", v)}
+                  label="On-fire pick animation"
+                  hint="Show the hero’s gloat portrait and a flame glow for two seconds."
+                />
+                <Toggle
+                  checked={config.voiceLines}
+                  onChange={(v) => update("voiceLines", v)}
+                  label="Hero selection voice lines"
+                  hint="Play one game voice line for each new pick in the broadcast."
+                />
+                <Field label={`Voice volume · ${config.voiceVolume}%`}>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={config.voiceVolume}
+                    onChange={(e) =>
+                      update("voiceVolume", Number(e.target.value))
+                    }
+                    aria-label="Voice volume"
+                  />
+                </Field>
+                <p>
+                  Use Preview sound and Test pick in demo mode to check audio.
+                  The studio starts muted so it can stay open beside OBS. In
+                  OBS, enable “Control audio via OBS” on the Browser Source.
+                </p>
+                {!isOverlay && soundBlocked && (
+                  <button className="button secondary" onClick={enableSound}>
+                    Enable preview sound
+                  </button>
+                )}
+              </section>
             </div>
           )}
           <section className="broadcast-link-panel">
@@ -1237,7 +1369,8 @@ export default function App() {
               <p>
                 Copy the OBS URL. Create a Browser Source at 1920 × 1080, paste
                 the URL, and enable “Refresh browser when scene becomes active”.
-                Choose Lower third and Transparent background for an overlay.
+                Enable “Control audio via OBS” for hero voice lines. Choose
+                Lower third and Transparent background for an overlay.
               </p>
             </li>
             <li>
