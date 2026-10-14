@@ -3,6 +3,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const previous = JSON.parse(
+  await fs.readFile(path.join(root, "src/heroes.json"), "utf8"),
+);
 const response = await fetch("https://statlocker.gg/api/info/heroes-full");
 if (!response.ok)
   throw Error(
@@ -16,6 +19,9 @@ const heroes = all
     name: h.name,
     image: `/heroes/${h.id}.webp`,
     source: h.images.icon_hero_card_webp,
+    gloatImage: h.images.hero_card_gloat_webp,
+    criticalImage: h.images.hero_card_critical_webp,
+    voiceLines: previous.find((hero) => hero.id === h.id)?.voiceLines || [],
   }));
 const cards = await Promise.all(
   heroes.map(async (hero) => {
@@ -40,3 +46,9 @@ await fs.writeFile(
 console.log(
   `Updated ${heroes.length} hero cards. Run npm run build before deployment.`,
 );
+const missing = heroes.filter((hero) => !hero.voiceLines.length);
+if (missing.length)
+  console.warn(
+    "Add verified hero-select voice URLs for: " +
+      missing.map((hero) => hero.name).join(", "),
+  );
