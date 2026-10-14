@@ -22,7 +22,11 @@ Disconnect & use manual mode preserves the last live selections. Click a hero sl
 
 ## Pick effects and audio
 
-New picks show the hero's official gloat/on-fire portrait with a flame glow for two seconds, then return to the bundled normal card. Ban slots use critical portraits. The active team's mark and current slot pulse while its turn is active; paused and completed drafts stop the pulse. Team 2's picks, bans, and heading fill from the right. Reduced-motion preferences disable CSS animation.
+New picks show the hero's official gloat/on-fire portrait with a light-blue/cyan glow for six seconds, then crossfade to the bundled normal card over 0.9 seconds. Both portraits stay mounted during the fade, so there is no image swap or loading flash. The glow, card border, and shadow also fade smoothly.
+
+The glow uses the game's `#90FFE3` kill-streak portrait color from [Deadlock's extracted HUD styling](https://github.com/SteamTracking/GameTracking-Deadlock/blob/master/game/citadel/pak01_dir/panorama/styles/hero_badge.css). Its soft animated halo is recreated in CSS because the game's original `ui_topbar_killstreak_stylized.vpcf` particle runs in the Source 2 engine.
+
+Ban slots use critical portraits. The active team's mark and current slot pulse while its turn is active; paused and completed drafts stop the pulse. Team 2's picks, bans, and heading fill from the right. Reduced-motion preferences disable CSS animation.
 
 One genuine game selection voice line plays for each new pick. The first state after joining or reconnecting primes the draft without replaying old selections; bans and timer updates are silent. Rapid picks queue their voice lines rather than playing over each other. Settings include voice enable/disable, volume, and the on-fire effect, and are included in OBS links and settings backups.
 
@@ -69,10 +73,10 @@ A future shared version can add authenticated admin accounts, persistent match r
 ## Verification
 
 - Production build completed successfully.
-- Twelve automated tests cover source URL validation, Arabic branding and manual-state URL round trips, participant-data removal, dynamic ban counts, safe logo inputs, spectator-only messages, timer messages, reconnection baselines, room errors, pick-event deduplication, sequential audio, autoplay recovery, volume/URL persistence, and complete hero effect metadata.
+- Fourteen automated tests cover source URL validation, Arabic branding and manual-state URL round trips, participant-data removal, dynamic ban counts, safe logo inputs, spectator-only messages, timer messages, reconnection baselines, room errors, pick-event deduplication, six-second timing, independent overlapping picks, replacement/reset cleanup, sequential audio, autoplay recovery, volume/URL persistence, and complete hero effect metadata.
 - Browser checks confirmed a live spectator state from room VBWWGH17. It was ACTIVE at the first ban, with no hero selections; no source draft decisions were changed. Changing picks and timer payloads were exercised with protocol fixtures.
 - Desktop checks covered demo artwork, Arabic names, score edits, logo upload/removal, manual hero selection, a separate broadcast view, and transparent document/body/canvas backgrounds.
-- Effect checks confirmed mirrored picks/bans and heading, critical ban portraits, a two-second gloat-to-normal transition, muted studio preview, sound activation, and actual pick audio playback in a separate browser broadcast, including the newer Solomon voice.
+- Effect checks confirmed mirrored picks/bans and heading, critical ban portraits, muted studio preview, sound activation, and actual pick audio playback in a separate browser broadcast, including the newer Solomon voice.
 - A 390-pixel phone viewport was verified with no horizontal overflow; a full-page phone screenshot is included. OBS itself and a Vercel deployment were not tested.
 
 ## Source map
