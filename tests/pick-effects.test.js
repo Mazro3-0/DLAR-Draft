@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createPickTracker, createVoicePlayer } from "../src/pick-effects.js";
+import {
+  createPickTracker,
+  createVoicePlayer,
+  createPickFlashController,
+} from "../src/pick-effects.js";
 import {
   cleanConfig,
   encodeConfig,
@@ -8,6 +12,69 @@ import {
   makeDemo,
 } from "../src/draft.js";
 import fs from "node:fs";
+
+function flashHarness() {
+  let now = 0,
+    id = 0;
+  const pending = new Map(),
+    states = [];
+  const controller = createPickFlashController({
+    onChange: (state) => states.push(state),
+    schedule: (fn, delay) => {
+      pending.set(++id, { fn, at: now + delay });
+      return id;
+    },
+    cancel: (id) => pending.delete(id),
+  });
+  const advance = (ms) => {
+    now += ms;
+    for (const [id, task] of [...pending]) {
+      if (task.at <= now) {
+        pending.delete(id);
+        task.fn();
+      }
+    }
+  };
+  return { controller, pending, states, advance };
+}
+
+test("on-fire lasts six seconds and overlapping team picks expire independently", () => {
+  const t = flashHarness();
+  t.controller.show("left-1", 1);
+  t.advance(2000);
+  t.controller.show("right-1", 6);
+  t.advance(3999);
+  assert.deepEqual(t.states.at(-1), { "left-1": 1, "right-1": 6 });
+  t.advance(1);
+  assert.deepEqual(t.states.at(-1), { "right-1": 6 });
+  t.advance(2000);
+  assert.deepEqual(t.states.at(-1), {});
+  assert.equal(t.pending.size, 0);
+});
+
+test("replacement resets the six-second window and room/reset/dispose cancel stale callbacks", () => {
+  const t = flashHarness();
+  t.controller.show("slot", 1);
+  const stale = [...t.pending.values()][0].fn;
+  t.advance(5000);
+  t.controller.show("slot", 6);
+  stale();
+  assert.deepEqual(t.states.at(-1), { slot: 6 });
+  t.advance(5999);
+  assert.deepEqual(t.states.at(-1), { slot: 6 });
+  t.advance(1);
+  assert.deepEqual(t.states.at(-1), {});
+  t.controller.show("next", 8);
+  t.controller.reset();
+  assert.deepEqual(t.states.at(-1), {});
+  assert.equal(t.pending.size, 0);
+  t.controller.show("next", 8);
+  const stateCount = t.states.length;
+  t.controller.dispose();
+  t.advance(6000);
+  assert.equal(t.states.length, stateCount);
+  assert.equal(t.pending.size, 0);
+});
 
 test("only new picks trigger effects, including replacement and clear/re-pick; joins do not replay", () => {
   const tracker = createPickTracker();
