@@ -98,7 +98,8 @@ function setup() {
     statuses = [],
     snapshots = [],
     timers = [],
-    notices = [];
+    notices = [],
+    initialStates = [];
   let id = 0;
   class Socket {
     constructor(url) {
@@ -122,7 +123,10 @@ function setup() {
     "VBWWGH17",
     {
       onStatus: (s) => statuses.push(s),
-      onSnapshot: (s) => snapshots.push(s),
+      onSnapshot: (s, { initial }) => {
+        snapshots.push(s);
+        initialStates.push(initial);
+      },
       onTimer: (s) => timers.push(s),
       onNotice: (s) => notices.push(s),
     },
@@ -136,7 +140,16 @@ function setup() {
       clearTimeout: (i) => scheduled.delete(i),
     },
   );
-  return { sockets, scheduled, statuses, snapshots, timers, notices, stop };
+  return {
+    sockets,
+    scheduled,
+    statuses,
+    snapshots,
+    timers,
+    notices,
+    initialStates,
+    stop,
+  };
 }
 
 test("spectator protocol receives picks and timers without sending draft decisions", () => {
@@ -155,6 +168,8 @@ test("spectator protocol receives picks and timers without sending draft decisio
   socket.receive({ type: "TIMER_UPDATE", timerState: { team1StepTimer: 29 } });
   assert.equal(t.statuses.at(-1).state, "live");
   assert.equal(t.snapshots[0].steps[2].heroId, 6);
+  socket.receive({ type: "DRAFT_STATE_UPDATE", draftState });
+  assert.deepEqual(t.initialStates, [true, false]);
   assert.equal(t.timers[0].team1StepTimer, 29);
   socket.receive("not-json");
   assert.equal(t.notices.length, 1);
@@ -177,13 +192,19 @@ test("reconnect keeps the last snapshot and disconnect cancels future updates", 
   assert.ok(retry);
   retry.fn();
   assert.equal(t.sockets.length, 2);
+  t.sockets[1].onopen();
+  t.sockets[1].receive({
+    type: "DRAFT_STATE_UPDATE",
+    draftState: { ...makeDemo(), draftCode: "VBWWGH17" },
+  });
+  assert.deepEqual(t.initialStates, [true, true]);
   t.stop();
   const next = t.sockets[1];
   next.receive({
     type: "DRAFT_STATE_UPDATE",
     draftState: { ...makeDemo(), draftCode: "VBWWGH17" },
   });
-  assert.equal(t.snapshots.length, 1);
+  assert.equal(t.snapshots.length, 2);
 });
 
 test("a room error stops reconnecting and another room cannot replace the current draft", () => {
