@@ -1402,11 +1402,11 @@
   animation: portrait-arrival 0.45s ease-out both;
 }
 /* The renderer clips out the portrait interior, including its soft edge glow. */
-.pick-sparks {
+.pick-flame-effect {
   position: absolute;
-  inset: -42px;
-  width: calc(100% + 84px);
-  height: calc(100% + 84px);
+  inset: -48px;
+  width: calc(100% + 96px);
+  height: calc(100% + 96px);
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
@@ -1415,7 +1415,7 @@
     opacity var(--pick-fade-duration, 900ms) ease-in-out,
     visibility 0s var(--pick-fade-duration, 900ms);
 }
-.new-pick .pick-sparks {
+.new-pick .pick-flame-effect {
   opacity: 1;
   visibility: visible;
   transition-delay: 0s;
