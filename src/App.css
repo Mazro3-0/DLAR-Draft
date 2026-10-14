@@ -1396,19 +1396,17 @@
   animation: turn-pulse 1.5s ease-in-out infinite;
 }
 .hero-slot.new-pick {
-  border-color: #98e6ff;
   animation: pick-arrival 0.4s ease-out both;
-  box-shadow:
-    0 0 8px #7bddff70,
-    0 0 18px #399fe940;
 }
 .hero-slot.new-pick .hero-portrait-gloat {
   animation: portrait-arrival 0.45s ease-out both;
 }
-/* Flames sit outside the portrait frame; no color overlay touches the artwork. */
-.pick-flames {
+/* The renderer clips out the portrait interior, including its soft edge glow. */
+.pick-sparks {
   position: absolute;
-  inset: 0;
+  inset: -42px;
+  width: calc(100% + 84px);
+  height: calc(100% + 84px);
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
@@ -1417,69 +1415,7 @@
     opacity var(--pick-fade-duration, 900ms) ease-in-out,
     visibility 0s var(--pick-fade-duration, 900ms);
 }
-.pick-flame-edge {
-  position: absolute;
-  display: flex;
-  filter: drop-shadow(0 0 2px #70dfffaa);
-}
-.pick-flame-edge.top,
-.pick-flame-edge.bottom {
-  left: 0;
-  right: 0;
-  height: 20px;
-}
-.pick-flame-edge.top {
-  bottom: 100%;
-}
-.pick-flame-edge.bottom {
-  top: 100%;
-}
-.pick-flame-edge.left,
-.pick-flame-edge.right {
-  top: 0;
-  bottom: 0;
-  width: 13px;
-  flex-direction: column;
-}
-.pick-flame-edge.left {
-  right: 100%;
-}
-.pick-flame-edge.right {
-  left: 100%;
-}
-.pick-flame {
-  display: block;
-  flex: 1 1 0;
-  min-width: 0;
-  min-height: 0;
-  overflow: visible;
-  animation: flame-flicker-y var(--flame-duration) ease-in-out
-    var(--flame-delay) infinite alternate;
-}
-.top .pick-flame {
-  transform-origin: center bottom;
-}
-.bottom .pick-flame {
-  transform-origin: center top;
-}
-.left .pick-flame,
-.right .pick-flame {
-  animation-name: flame-flicker-x;
-}
-.left .pick-flame {
-  transform-origin: right center;
-}
-.right .pick-flame {
-  transform-origin: left center;
-}
-.flame-outer {
-  fill: #3eabef;
-  fill-opacity: 0.8;
-}
-.flame-core {
-  fill: #c3f5ff;
-}
-.new-pick .pick-flames {
+.new-pick .pick-sparks {
   opacity: 1;
   visibility: visible;
   transition-delay: 0s;
@@ -1511,38 +1447,11 @@
     transform: scale(1);
   }
 }
-@keyframes flame-flicker-y {
-  0% {
-    transform: scaleY(0.45) skewX(-9deg);
-    opacity: 0.65;
-  }
-  55% {
-    transform: scaleY(0.95) skewX(7deg);
-    opacity: 1;
-  }
-  100% {
-    transform: scaleY(0.65) skewX(-4deg);
-    opacity: 0.8;
-  }
-}
-@keyframes flame-flicker-x {
-  0% {
-    transform: scaleX(0.5) skewY(-8deg);
-    opacity: 0.65;
-  }
-  55% {
-    transform: scaleX(0.9) skewY(6deg);
-    opacity: 1;
-  }
-  100% {
-    transform: scaleX(0.6) skewY(-4deg);
-    opacity: 0.8;
-  }
-}
 .hero-slot.active .slot-symbol {
   color: #65734f;
 }
 .active-slot-label {
+  z-index: 2;
   position: absolute;
   top: 0;
   left: 0;
