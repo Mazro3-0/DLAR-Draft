@@ -13,6 +13,9 @@ export const DEFAULT_CONFIG = {
   transparent: false,
   showBans: true,
   showTimer: true,
+  pickEffects: true,
+  voiceLines: true,
+  voiceVolume: 70,
   firstPick: 1,
 };
 
@@ -71,6 +74,9 @@ export function cleanConfig(value = {}) {
     useSourceNames: value.useSourceNames === true,
     showBans: value.showBans !== false,
     showTimer: value.showTimer !== false,
+    pickEffects: value.pickEffects !== false,
+    voiceLines: value.voiceLines !== false,
+    voiceVolume: num(value.voiceVolume, 70, 100),
     firstPick: value.firstPick === 2 ? 2 : 1,
     teams: [0, 1].map((i) => ({
       name: str(value.teams?.[i]?.name, DEFAULT_CONFIG.teams[i].name, 48),
@@ -290,11 +296,12 @@ export function openDraftConnection(code, callbacks, options = {}) {
         try {
           const snapshot = cleanSnapshot(msg.draftState);
           if (snapshot.draftCode !== code) return;
+          const initial = !received;
           received = true;
           attempt = 0;
           cancel(watchdog);
           status("live", "Receiving live draft updates.");
-          callbacks.onSnapshot(snapshot);
+          callbacks.onSnapshot(snapshot, { initial });
         } catch (e) {
           callbacks.onNotice?.(e.message);
         }

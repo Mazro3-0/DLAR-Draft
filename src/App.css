@@ -402,6 +402,19 @@
   font-weight: 400;
   padding: 0 3px;
 }
+.preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.enable-broadcast-sound {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 20;
+}
 .text-button {
   display: inline-flex;
   align-items: center;
@@ -1280,11 +1293,23 @@
   letter-spacing: 1px;
   color: #919b82;
 }
+.draft-group-label b {
+  font-weight: 400;
+}
+.side-2 .draft-group-label {
+  flex-direction: row-reverse;
+}
 .hero-row {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
   gap: 9px;
+}
+.side-2 .hero-row {
+  direction: rtl;
+}
+.side-2 .hero-slot {
+  direction: ltr;
 }
 .hero-slot {
   position: relative;
@@ -1297,7 +1322,9 @@
   color: #7f8f67;
   background: #d6d8c6;
   border: 1px solid #aeb99d;
-  transition: box-shadow 0.3s;
+  transition:
+    box-shadow var(--pick-fade-duration, 900ms) ease,
+    border-color var(--pick-fade-duration, 900ms) ease;
 }
 .hero-slot.pick {
   height: 189px;
@@ -1307,6 +1334,16 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+.hero-slot .hero-portrait-gloat {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--pick-fade-duration, 900ms) ease-in-out;
+}
+.hero-slot.new-pick .hero-portrait-gloat {
+  opacity: 1;
 }
 .slot-empty {
   display: flex;
@@ -1340,10 +1377,96 @@
   text-overflow: ellipsis;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  z-index: 2;
 }
 .hero-slot.active {
   border: 3px solid #65734f;
   box-shadow: 0 0 0 4px #8b9b6e40;
+  animation: turn-pulse 1.5s ease-in-out infinite;
+}
+.taking-turn .team-mark {
+  animation: turn-pulse 1.5s ease-in-out infinite;
+}
+.hero-slot.new-pick {
+  border-color: #90ffe3;
+  animation: pick-arrival 0.4s ease-out both;
+  box-shadow:
+    0 0 10px #90ffe380,
+    0 0 26px #8cdfff66,
+    inset 0 0 16px #90ffe354;
+}
+.hero-slot.new-pick .hero-portrait-gloat {
+  animation: portrait-arrival 0.45s ease-out both;
+}
+/* Deadlock's kill-streak portrait backing uses #90FFE3 in hero_badge.css. */
+.pick-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--pick-fade-duration, 900ms) ease-in-out;
+  background:
+    linear-gradient(
+      90deg,
+      #90ffe332,
+      transparent 24%,
+      transparent 76%,
+      #90ffe332
+    ),
+    radial-gradient(ellipse at 50% 0%, #a3efff5c, transparent 62%);
+  mix-blend-mode: screen;
+}
+.pick-glow > span {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 0% 45%, #90ffe3a6, transparent 45%),
+    radial-gradient(ellipse at 100% 45%, #90ffe3a6, transparent 45%),
+    radial-gradient(ellipse at 50% 100%, #a3efff99, transparent 60%);
+  filter: blur(5px);
+}
+.new-pick .pick-glow {
+  opacity: 1;
+}
+.new-pick .pick-glow > span {
+  animation: cyan-glow-breathe 1.5s ease-in-out infinite alternate;
+}
+@keyframes turn-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px #8b9b6e35;
+  }
+  50% {
+    box-shadow:
+      0 0 0 5px #8b9b6e80,
+      0 0 22px #65734f65;
+  }
+}
+@keyframes pick-arrival {
+  from {
+    transform: translateY(10px) scale(0.94);
+  }
+  to {
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes portrait-arrival {
+  from {
+    transform: scale(1.12);
+    filter: brightness(1.2);
+  }
+  to {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+@keyframes cyan-glow-breathe {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 0.55;
+  }
 }
 .hero-slot.active .slot-symbol {
   color: #65734f;
@@ -1385,8 +1508,7 @@
   border-color: #b3ad9c;
 }
 .hero-slot.ban img {
-  filter: grayscale(1);
-  opacity: 0.65;
+  opacity: 0.9;
 }
 .hero-slot.ban .hero-label {
   display: none;
@@ -1408,7 +1530,12 @@
   transform: rotate(-45deg);
 }
 .side-2 .ban-row {
-  justify-content: flex-end;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}
+.side-2 .ban-row > span {
+  margin-right: 0;
+  margin-left: 7px;
 }
 .draft-center {
   grid-column: 2;
