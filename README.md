@@ -34,6 +34,24 @@ The studio starts muted independently of the broadcast. Choose **Load demo → P
 
 The 42 current heroes have selection clips. Normal cards are bundled; gloat and critical variants use the Deadlock API asset bucket, and voices use game-audio libraries at [Pauselock](https://pauselock.net/voicelines) and [VLViewer](https://deadlock.vlviewer.com/). These remote assets require internet access. Failed variant images fall back to the bundled normal card; failed audio clips are skipped. The hero refresh script preserves existing voice mappings and reports new heroes that need selection clips.
 
+## Stat panels
+
+Open **Stat panels**, enter a Deadlock match ID, and choose **Finished match** or **Live match · beta**. Finished custom match **120513539** was verified: 12 players, 42:05 duration, 651,398 total hero damage and 322 permanent pickups. Source data comes from the [Deadlock API](https://api.deadlock-api.com/openapi.json). Profile lookup uses display names only; real names, locations, friends and other profile fields are discarded.
+
+Templates include hero damage, permanent buffs, net worth, and hero healing. All 12 players have hero icons. Choose player boxes, two team columns, or a leaderboard; sort by value or team, set the position, size and parchment/ink theme, and override team/player display names. Settings stay in this browser; Export/Import template moves the presentation settings to another admin.
+
+Stat panels look up the current hero catalogue through the CORS-enabled Deadlock API asset endpoint. Known heroes keep their bundled cards; newly released heroes such as Violet use the verified asset-bucket image. Failed catalogue requests fall back to bundled artwork and unknown heroes retain an explicit placeholder.
+
+Finished matches provide a recorded timeline. Damage/healing use the most recent recorded sample at or before the selected time; values are not interpolated. Permanent buffs count pickup events across all permanent types and levels, excluding temporary power-ups. Missing data shows **—**, not zero. Incomplete pickup timing stays unknown in recorded frames. The API's final top-level K/D/A takes precedence over its final sampled K/D/A.
+
+**Copy panel OBS URL** creates an independent 1920 × 1080 transparent Browser Source containing the match ID and presentation settings. OBS fetches the same match itself; it does not need this browser's local storage. A recorded timeline selection is included in the link. Copy a new link after changing its match, template, names, or presentation. Add one source for each template and toggle visibility with OBS controls or hotkeys. **Show/Hide preview controls only the studio preview.** Remote on-air switching from the dashboard is future work requiring a shared control service.
+
+The live beta uses the hosted `GET /v1/matches/demo/live/query` SSE endpoint and a projection of `CCitadelPlayerController`. Damage, net worth, healing and K/D/A are merged from partial updates; Steam IDs are normalized to the same account IDs used by finished matches. Overlapping controller records are deduplicated. Updates are batched, stale feeds are labelled, requests are cancelled on disconnect, and failures retain the last received values. There is no automatic reconnect loop to repeatedly spectate inaccessible lobbies or exhaust the source rate limit. The API currently documents 6 match-ID resolutions/hour per IP without a key (cached spectating is reused).
+
+**Live permanent-buff counts are not verified and remain unavailable.** The known controller schema exposes damage and healing but no verified permanent-pickup total. A similarly named field on an Artist ability is not a general player counter and is deliberately not used. A real ongoing tournament match ID is still needed to verify spectator access, update delay and end-of-match behaviour; the finished match cannot prove live operation. Source/schema changes can produce a visible connection error. This version needs no new backend or Vercel plan change.
+
+Tests cover the real-match totals, unknown versus zero values, historical sample selection, permanent versus temporary buffs, incomplete pickup timing, final K/D/A, Arabic OBS-link round trips, deterministic ranking, profile minimization, partial live updates, reconnection identities and SSE transport/error handling. Test fixture account IDs are anonymized to player slots.
+
 ## Existing Vercel project
 
 Keep the friend’s current repository and Vercel project. Review and replace the app files with this version, then push through the existing Git workflow. Use the folder containing `package.json` as the project root. The supplied `vercel.json` sets **Vite**, build command **npm run build**, and output directory **dist**. This follows [Vercel’s Vite deployment workflow](https://vercel.com/docs/frameworks/frontend/vite).

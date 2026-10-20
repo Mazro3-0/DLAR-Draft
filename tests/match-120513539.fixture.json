@@ -1,0 +1,1539 @@
+{
+  "match_info": {
+    "match_id": 120513539,
+    "duration_s": 2525,
+    "winning_team": 0,
+    "players": [
+      {
+        "account_id": 3,
+        "player_slot": 3,
+        "hero_id": 31,
+        "team": 0,
+        "kills": 8,
+        "deaths": 13,
+        "assists": 21,
+        "net_worth": 40623,
+        "stats": [
+          {
+            "time_stamp_s": 180,
+            "player_damage": 624,
+            "player_healing": 26,
+            "net_worth": 1745,
+            "kills": 0,
+            "deaths": 1,
+            "assists": 0
+          },
+          {
+            "time_stamp_s": 2525,
+            "player_damage": 55375,
+            "player_healing": 11989,
+            "net_worth": 40623,
+            "kills": 7,
+            "deaths": 14,
+            "assists": 21
+          }
+        ],
+        "power_up_buffs": [
+          {
+            "type": "hp_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2431]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2431]
+          },
+          {
+            "type": "spirit_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1065, 1274]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1274, 1329]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [989]
+          },
+          {
+            "type": "hp_permanent_pickup_lv2",
+            "value": 4,
+            "is_permanent": true,
+            "pickup_times_s": [945, 987, 1234, 1274]
+          },
+          {
+            "type": "cd_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [664]
+          },
+          {
+            "type": "wp_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [617]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1065]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [980, 1274]
+          },
+          {
+            "type": "range_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1254]
+          },
+          {
+            "type": "casting_powerup_pickup",
+            "value": 1,
+            "is_permanent": false,
+            "pickup_times_s": []
+          }
+        ]
+      },
+      {
+        "account_id": 8,
+        "player_slot": 8,
+        "hero_id": 19,
+        "team": 1,
+        "kills": 12,
+        "deaths": 12,
+        "assists": 14,
+        "net_worth": 45874,
+        "stats": [
+          {
+            "time_stamp_s": 180,
+            "player_damage": 1359,
+            "player_healing": 121,
+            "net_worth": 1830,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 1
+          },
+          {
+            "time_stamp_s": 2525,
+            "player_damage": 61401,
+            "player_healing": 14089,
+            "net_worth": 45874,
+            "kills": 12,
+            "deaths": 14,
+            "assists": 14
+          }
+        ],
+        "power_up_buffs": [
+          {
+            "type": "firerate_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1955]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1801]
+          },
+          {
+            "type": "hp_permanent_pickup_lv3",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1801, 1955]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv3",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1801, 1801]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2035]
+          },
+          {
+            "type": "range_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1813]
+          },
+          {
+            "type": "spirit_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [1627, 1627, 1793]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1768, 1793]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [1116, 1630, 1784]
+          },
+          {
+            "type": "hp_permanent_pickup_lv2",
+            "value": 6,
+            "is_permanent": true,
+            "pickup_times_s": [1570, 1609, 1627, 1653, 1768, 1793]
+          },
+          {
+            "type": "cd_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [1603, 1768, 1773]
+          },
+          {
+            "type": "wp_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [665, 893]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [751, 753]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1232, 1570]
+          },
+          {
+            "type": "range_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1627, 1793]
+          },
+          {
+            "type": "movespeed_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1768]
+          },
+          {
+            "type": "hp_permanent_pickup",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [402, 427]
+          }
+        ]
+      },
+      {
+        "account_id": 1,
+        "player_slot": 1,
+        "hero_id": 18,
+        "team": 0,
+        "kills": 2,
+        "deaths": 13,
+        "assists": 33,
+        "net_worth": 48034,
+        "stats": [
+          {
+            "time_stamp_s": 180,
+            "player_damage": 1035,
+            "player_healing": 572,
+            "net_worth": 1723,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 0
+          },
+          {
+            "time_stamp_s": 2525,
+            "player_damage": 36182,
+            "player_healing": 24054,
+            "net_worth": 48034,
+            "kills": 2,
+            "deaths": 13,
+            "assists": 33
+          }
+        ],
+        "power_up_buffs": [
+          {
+            "type": "spirit_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1837]
+          },
+          {
+            "type": "hp_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2431]
+          },
+          {
+            "type": "cd_permanent_pickup_lv3",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1837, 1895]
+          },
+          {
+            "type": "wp_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2431]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv3",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1811, 1837]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv3",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1837, 1850]
+          },
+          {
+            "type": "spirit_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1223]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1466]
+          },
+          {
+            "type": "hp_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [856]
+          },
+          {
+            "type": "cd_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1065]
+          },
+          {
+            "type": "wp_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [669]
+          },
+          {
+            "type": "range_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1065]
+          }
+        ]
+      },
+      {
+        "account_id": 11,
+        "player_slot": 11,
+        "hero_id": 12,
+        "team": 1,
+        "kills": 20,
+        "deaths": 7,
+        "assists": 27,
+        "net_worth": 49842,
+        "stats": [
+          {
+            "time_stamp_s": 180,
+            "player_damage": 1105,
+            "player_healing": 553,
+            "net_worth": 1809,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 0
+          },
+          {
+            "time_stamp_s": 2525,
+            "player_damage": 75081,
+            "player_healing": 56224,
+            "net_worth": 49842,
+            "kills": 19,
+            "deaths": 7,
+            "assists": 27
+          }
+        ],
+        "power_up_buffs": [
+          {
+            "type": "ammo_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1955]
+          },
+          {
+            "type": "wp_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2002]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1955]
+          },
+          {
+            "type": "spirit_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [678, 920, 988]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv2",
+            "value": 4,
+            "is_permanent": true,
+            "pickup_times_s": [673, 684, 684, 1570]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [920, 966, 1365]
+          },
+          {
+            "type": "hp_permanent_pickup_lv2",
+            "value": 6,
+            "is_permanent": true,
+            "pickup_times_s": [684, 988, 989, 1012, 1373, 1373]
+          },
+          {
+            "type": "cd_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [673, 966, 1235]
+          },
+          {
+            "type": "wp_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [966, 1373, 1373]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv2",
+            "value": 4,
+            "is_permanent": true,
+            "pickup_times_s": [684, 966, 988, 1570]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [673, 920, 988]
+          },
+          {
+            "type": "range_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [689, 988]
+          },
+          {
+            "type": "movespeed_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [673, 920]
+          },
+          {
+            "type": "hp_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [206]
+          },
+          {
+            "type": "cd_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [258]
+          },
+          {
+            "type": "range_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [213]
+          },
+          {
+            "type": "gun_powerup_pickup",
+            "value": 1,
+            "is_permanent": false,
+            "pickup_times_s": []
+          },
+          {
+            "type": "casting_powerup_pickup",
+            "value": 2,
+            "is_permanent": false,
+            "pickup_times_s": []
+          },
+          {
+            "type": "movement_powerup_pickup",
+            "value": 1,
+            "is_permanent": false,
+            "pickup_times_s": []
+          }
+        ]
+      },
+      {
+        "account_id": 7,
+        "player_slot": 7,
+        "hero_id": 78,
+        "team": 1,
+        "kills": 12,
+        "deaths": 11,
+        "assists": 23,
+        "net_worth": 42741,
+        "stats": [
+          {
+            "time_stamp_s": 180,
+            "player_damage": 723,
+            "player_healing": 0,
+            "net_worth": 2018,
+            "kills": 1,
+            "deaths": 0,
+            "assists": 0
+          },
+          {
+            "time_stamp_s": 2525,
+            "player_damage": 66414,
+            "player_healing": 17629,
+            "net_worth": 42741,
+            "kills": 13,
+            "deaths": 12,
+            "assists": 23
+          }
+        ],
+        "power_up_buffs": [
+          {
+            "type": "firerate_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1955]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1955]
+          },
+          {
+            "type": "range_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1866]
+          },
+          {
+            "type": "spirit_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [1242, 1570, 1633]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [1356, 1356, 1570]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1367, 1633]
+          },
+          {
+            "type": "hp_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [1367, 1480, 1633]
+          },
+          {
+            "type": "cd_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [981, 1367, 1498]
+          },
+          {
+            "type": "wp_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1356]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [1140, 1356, 1367]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1633]
+          },
+          {
+            "type": "firerate_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [314]
+          },
+          {
+            "type": "ammo_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [312]
+          },
+          {
+            "type": "hp_permanent_pickup",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [215, 559]
+          },
+          {
+            "type": "spiritresist_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [195]
+          },
+          {
+            "type": "movement_powerup_pickup",
+            "value": 1,
+            "is_permanent": false,
+            "pickup_times_s": []
+          }
+        ]
+      },
+      {
+        "account_id": 10,
+        "player_slot": 10,
+        "hero_id": 60,
+        "team": 1,
+        "kills": 3,
+        "deaths": 5,
+        "assists": 30,
+        "net_worth": 52170,
+        "stats": [
+          {
+            "time_stamp_s": 180,
+            "player_damage": 1031,
+            "player_healing": 0,
+            "net_worth": 1632,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 2
+          },
+          {
+            "time_stamp_s": 2525,
+            "player_damage": 34361,
+            "player_healing": 13082,
+            "net_worth": 52170,
+            "kills": 3,
+            "deaths": 5,
+            "assists": 30
+          }
+        ],
+        "power_up_buffs": [
+          {
+            "type": "cd_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1867]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1955]
+          },
+          {
+            "type": "movespeed_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1955]
+          },
+          {
+            "type": "spirit_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [798, 998, 1639]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [772, 1055, 1358]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [1055, 1358, 1639]
+          },
+          {
+            "type": "hp_permanent_pickup_lv2",
+            "value": 6,
+            "is_permanent": true,
+            "pickup_times_s": [617, 998, 1055, 1570, 1639, 1649]
+          },
+          {
+            "type": "cd_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [739, 869, 998]
+          },
+          {
+            "type": "wp_permanent_pickup_lv2",
+            "value": 4,
+            "is_permanent": true,
+            "pickup_times_s": [622, 1358, 1639, 1797]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [998, 1213, 1236]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [1248, 1570, 1604]
+          },
+          {
+            "type": "range_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1055, 1364]
+          },
+          {
+            "type": "movespeed_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1045, 1358]
+          },
+          {
+            "type": "firerate_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [592]
+          },
+          {
+            "type": "spiritresist_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [304]
+          }
+        ]
+      },
+      {
+        "account_id": 12,
+        "player_slot": 12,
+        "hero_id": 86,
+        "team": 1,
+        "kills": 7,
+        "deaths": 7,
+        "assists": 34,
+        "net_worth": 45056,
+        "stats": [
+          {
+            "time_stamp_s": 180,
+            "player_damage": 1789,
+            "player_healing": 0,
+            "net_worth": 2033,
+            "kills": 2,
+            "deaths": 0,
+            "assists": 0
+          },
+          {
+            "time_stamp_s": 2525,
+            "player_damage": 56598,
+            "player_healing": 22345,
+            "net_worth": 45056,
+            "kills": 8,
+            "deaths": 8,
+            "assists": 34
+          }
+        ],
+        "power_up_buffs": [
+          {
+            "type": "hp_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1955]
+          },
+          {
+            "type": "cd_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1829]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1955]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1355]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [987, 1570]
+          },
+          {
+            "type": "cd_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1257]
+          },
+          {
+            "type": "wp_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1570]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [882]
+          },
+          {
+            "type": "hp_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [228]
+          },
+          {
+            "type": "wp_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [575]
+          },
+          {
+            "type": "bulletresist_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [575]
+          },
+          {
+            "type": "spiritresist_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [575]
+          },
+          {
+            "type": "movespeed_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [575]
+          },
+          {
+            "type": "survival_powerup_pickup",
+            "value": 1,
+            "is_permanent": false,
+            "pickup_times_s": []
+          }
+        ]
+      },
+      {
+        "account_id": 5,
+        "player_slot": 5,
+        "hero_id": 4,
+        "team": 0,
+        "kills": 5,
+        "deaths": 13,
+        "assists": 19,
+        "net_worth": 42735,
+        "stats": [
+          {
+            "time_stamp_s": 180,
+            "player_damage": 586,
+            "player_healing": 116,
+            "net_worth": 1385,
+            "kills": 0,
+            "deaths": 1,
+            "assists": 0
+          },
+          {
+            "time_stamp_s": 2525,
+            "player_damage": 61590,
+            "player_healing": 37853,
+            "net_worth": 42735,
+            "kills": 5,
+            "deaths": 15,
+            "assists": 19
+          }
+        ],
+        "power_up_buffs": [
+          {
+            "type": "spirit_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2431]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv3",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1835, 1835]
+          },
+          {
+            "type": "hp_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2431]
+          },
+          {
+            "type": "cd_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1843]
+          },
+          {
+            "type": "wp_permanent_pickup_lv3",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1856, 1856]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1856]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv3",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1835, 1835]
+          },
+          {
+            "type": "range_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1856]
+          },
+          {
+            "type": "spirit_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1065]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1065, 1267]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [960, 968, 968]
+          },
+          {
+            "type": "hp_permanent_pickup_lv2",
+            "value": 5,
+            "is_permanent": true,
+            "pickup_times_s": [960, 980, 1267, 1356, 1356]
+          },
+          {
+            "type": "cd_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [968, 1356]
+          },
+          {
+            "type": "wp_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [968]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [960, 1356]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [960, 1267, 1267]
+          },
+          {
+            "type": "range_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [680]
+          },
+          {
+            "type": "movespeed_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1367]
+          },
+          {
+            "type": "bulletresist_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [226]
+          },
+          {
+            "type": "casting_powerup_pickup",
+            "value": 1,
+            "is_permanent": false,
+            "pickup_times_s": []
+          }
+        ]
+      },
+      {
+        "account_id": 4,
+        "player_slot": 4,
+        "hero_id": 63,
+        "team": 0,
+        "kills": 3,
+        "deaths": 11,
+        "assists": 24,
+        "net_worth": 43526,
+        "stats": [
+          {
+            "time_stamp_s": 180,
+            "player_damage": 743,
+            "player_healing": 14,
+            "net_worth": 2110,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 0
+          },
+          {
+            "time_stamp_s": 2525,
+            "player_damage": 44978,
+            "player_healing": 14735,
+            "net_worth": 43526,
+            "kills": 4,
+            "deaths": 13,
+            "assists": 24
+          }
+        ],
+        "power_up_buffs": [
+          {
+            "type": "firerate_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2296]
+          },
+          {
+            "type": "hp_permanent_pickup_lv3",
+            "value": 4,
+            "is_permanent": true,
+            "pickup_times_s": [2296, 2296, 2431, 2431]
+          },
+          {
+            "type": "wp_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2001]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2296]
+          },
+          {
+            "type": "spirit_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1050]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [604, 1065]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [966, 1549]
+          },
+          {
+            "type": "hp_permanent_pickup_lv2",
+            "value": 4,
+            "is_permanent": true,
+            "pickup_times_s": [966, 966, 966, 1514]
+          },
+          {
+            "type": "cd_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [644, 1065, 1346]
+          },
+          {
+            "type": "wp_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [824, 1066, 1236]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [1246, 1257, 1273]
+          },
+          {
+            "type": "movespeed_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [978]
+          },
+          {
+            "type": "spirit_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [525]
+          },
+          {
+            "type": "ammo_permanent_pickup",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [431, 533]
+          },
+          {
+            "type": "hp_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [555]
+          },
+          {
+            "type": "cd_permanent_pickup",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [525, 525]
+          },
+          {
+            "type": "wp_permanent_pickup",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [423, 553]
+          },
+          {
+            "type": "bulletresist_permanent_pickup",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [446, 525]
+          },
+          {
+            "type": "spiritresist_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [301]
+          },
+          {
+            "type": "gun_powerup_pickup",
+            "value": 1,
+            "is_permanent": false,
+            "pickup_times_s": []
+          },
+          {
+            "type": "movement_powerup_pickup",
+            "value": 1,
+            "is_permanent": false,
+            "pickup_times_s": []
+          }
+        ]
+      },
+      {
+        "account_id": 9,
+        "player_slot": 9,
+        "hero_id": 80,
+        "team": 1,
+        "kills": 13,
+        "deaths": 9,
+        "assists": 25,
+        "net_worth": 42997,
+        "stats": [
+          {
+            "time_stamp_s": 180,
+            "player_damage": 1604,
+            "player_healing": 265,
+            "net_worth": 1758,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 0
+          },
+          {
+            "time_stamp_s": 2525,
+            "player_damage": 53306,
+            "player_healing": 19168,
+            "net_worth": 42997,
+            "kills": 17,
+            "deaths": 9,
+            "assists": 25
+          }
+        ],
+        "power_up_buffs": [
+          {
+            "type": "ammo_permanent_pickup_lv3",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1955, 1955]
+          },
+          {
+            "type": "spirit_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [957]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [662]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [957, 957, 1026]
+          },
+          {
+            "type": "hp_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [651, 651, 673]
+          },
+          {
+            "type": "cd_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [651]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [651]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [940]
+          },
+          {
+            "type": "range_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1570]
+          },
+          {
+            "type": "movespeed_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [957, 1570]
+          },
+          {
+            "type": "hp_permanent_pickup",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [308, 447]
+          },
+          {
+            "type": "cd_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [316]
+          },
+          {
+            "type": "wp_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [441]
+          },
+          {
+            "type": "spiritresist_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [563]
+          },
+          {
+            "type": "survival_powerup_pickup",
+            "value": 1,
+            "is_permanent": false,
+            "pickup_times_s": []
+          },
+          {
+            "type": "movement_powerup_pickup",
+            "value": 1,
+            "is_permanent": false,
+            "pickup_times_s": []
+          }
+        ]
+      },
+      {
+        "account_id": 2,
+        "player_slot": 2,
+        "hero_id": 7,
+        "team": 0,
+        "kills": 28,
+        "deaths": 8,
+        "assists": 13,
+        "net_worth": 69035,
+        "stats": [
+          {
+            "time_stamp_s": 180,
+            "player_damage": 613,
+            "player_healing": 61,
+            "net_worth": 1455,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 0
+          },
+          {
+            "time_stamp_s": 2525,
+            "player_damage": 71588,
+            "player_healing": 16347,
+            "net_worth": 69035,
+            "kills": 26,
+            "deaths": 9,
+            "assists": 13
+          }
+        ],
+        "power_up_buffs": [
+          {
+            "type": "hp_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2431]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2431]
+          },
+          {
+            "type": "spirit_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [902]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1795]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [621, 714, 1065]
+          },
+          {
+            "type": "hp_permanent_pickup_lv2",
+            "value": 4,
+            "is_permanent": true,
+            "pickup_times_s": [1065, 1253, 1253, 1414]
+          },
+          {
+            "type": "cd_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [856, 902, 1253]
+          },
+          {
+            "type": "wp_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [706]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [706, 1253]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [706, 1253]
+          },
+          {
+            "type": "range_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [706, 841]
+          },
+          {
+            "type": "movespeed_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [902, 902]
+          },
+          {
+            "type": "firerate_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [570]
+          },
+          {
+            "type": "ammo_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [315]
+          },
+          {
+            "type": "hp_permanent_pickup",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [215, 570]
+          },
+          {
+            "type": "wp_permanent_pickup",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [570, 570]
+          },
+          {
+            "type": "movespeed_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [525]
+          },
+          {
+            "type": "gun_powerup_pickup",
+            "value": 1,
+            "is_permanent": false,
+            "pickup_times_s": []
+          },
+          {
+            "type": "survival_powerup_pickup",
+            "value": 1,
+            "is_permanent": false,
+            "pickup_times_s": []
+          }
+        ]
+      },
+      {
+        "account_id": 6,
+        "player_slot": 6,
+        "hero_id": 27,
+        "team": 0,
+        "kills": 5,
+        "deaths": 10,
+        "assists": 31,
+        "net_worth": 47198,
+        "stats": [
+          {
+            "time_stamp_s": 180,
+            "player_damage": 784,
+            "player_healing": 402,
+            "net_worth": 1466,
+            "kills": 0,
+            "deaths": 1,
+            "assists": 0
+          },
+          {
+            "time_stamp_s": 2525,
+            "player_damage": 34524,
+            "player_healing": 25410,
+            "net_worth": 47198,
+            "kills": 6,
+            "deaths": 10,
+            "assists": 31
+          }
+        ],
+        "power_up_buffs": [
+          {
+            "type": "spirit_permanent_pickup_lv3",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1855, 1890]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv3",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1808, 2431]
+          },
+          {
+            "type": "bulletresist_permanent_pickup_lv3",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [2431]
+          },
+          {
+            "type": "spirit_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1065]
+          },
+          {
+            "type": "firerate_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [875]
+          },
+          {
+            "type": "ammo_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1065, 1793]
+          },
+          {
+            "type": "hp_permanent_pickup_lv2",
+            "value": 2,
+            "is_permanent": true,
+            "pickup_times_s": [1793, 1793]
+          },
+          {
+            "type": "wp_permanent_pickup_lv2",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [1263]
+          },
+          {
+            "type": "spiritresist_permanent_pickup_lv2",
+            "value": 3,
+            "is_permanent": true,
+            "pickup_times_s": [980, 1231, 1793]
+          },
+          {
+            "type": "bulletresist_permanent_pickup",
+            "value": 1,
+            "is_permanent": true,
+            "pickup_times_s": [259]
+          }
+        ]
+      }
+    ]
+  }
+}

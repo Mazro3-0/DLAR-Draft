@@ -15,6 +15,7 @@ import {
   teamSlots,
 } from "./draft";
 import "./App.css";
+import StatPanels from "./StatPanels";
 
 const roster = Object.fromEntries(heroes.map((h) => [h.id, h]));
 const params = new URLSearchParams(window.location.search);
@@ -544,7 +545,9 @@ export default function App() {
   const [saveError, setSaveError] = useState("");
   const [toast, setToast] = useState("");
   const [activity, setActivity] = useState([]);
-  const [tab, setTab] = useState("studio");
+  const [tab, setTab] = useState(
+    params.get("tab") === "stats" ? "stats" : "studio",
+  );
   const [guide, setGuide] = useState(false);
   const [picker, setPicker] = useState(null);
   const [search, setSearch] = useState("");
@@ -841,6 +844,13 @@ export default function App() {
             Draft studio<span>01</span>
           </button>
           <button
+            className={tab === "stats" ? "selected" : ""}
+            onClick={() => setTab("stats")}
+          >
+            <Icon name="settings" />
+            Stat panels<span>02</span>
+          </button>
+          <button
             className={tab === "settings" ? "selected" : ""}
             onClick={() => setTab("settings")}
           >
@@ -876,7 +886,10 @@ export default function App() {
             {saveError ? "Backup recommended" : "Saved in this browser"}
           </span>
         </header>
-        <div className="workspace-content">
+        <div
+          className={`workspace-content${tab === "stats" ? " stats-tab" : ""}`}
+        >
+          <StatPanels config={config} active={tab === "stats"} />
           <div className="page-heading">
             <div>
               <span className="eyebrow">THE BROADCAST STARTS HERE</span>
@@ -1058,7 +1071,10 @@ export default function App() {
                 <button
                   className="text-button"
                   onClick={() =>
-                    setConfig((c) => ({ ...c, teams: [...c.teams].reverse() }))
+                    setConfig((c) => ({
+                      ...c,
+                      teams: [...c.teams].reverse(),
+                    }))
                   }
                 >
                   <Icon name="swap" size={16} />
