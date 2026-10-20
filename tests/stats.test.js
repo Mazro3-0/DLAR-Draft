@@ -5,6 +5,7 @@ import {
   applyProfileNames,
   cleanPanel,
   createSseParser,
+  liveFeedMessage,
   livePlayers,
   liveQueryUrl,
   loadFinishedMatch,
@@ -24,6 +25,40 @@ const fixture = JSON.parse(
   fs.readFileSync(new URL("./match-120513539.fixture.json", import.meta.url)),
 );
 const sample = () => normalizeMetadata(fixture, "120513539");
+test("relay progress, relay failure and parser failures have distinct explanations", () => {
+  const refusal = JSON.stringify({
+    error:
+      "Live broadcast error: live broadcast error: Valve's relay never started this match's broadcast (still \"Broadcast has not started yet\" after 60s).",
+  });
+  assert.match(
+    liveFeedMessage(refusal, "status"),
+    /retrying for up to a minute/,
+  );
+  assert.match(liveFeedMessage(refusal), /during the connection attempt/);
+  assert.doesNotMatch(
+    liveFeedMessage(refusal),
+    /private|live broadcast error/i,
+  );
+  assert.match(
+    liveFeedMessage('{"error":"schema discovery task failed"}'),
+    /data provider could not decode/,
+  );
+  assert.match(
+    liveFeedMessage('{"message":"Too many requests"}'),
+    /rate limited/,
+  );
+  assert.equal(
+    liveFeedMessage('{"message":"Receiving fragments"}', "status"),
+    "Receiving fragments",
+  );
+  assert.equal(
+    liveFeedMessage(
+      "Live broadcast error: Live broadcast error: relay disconnected",
+    ),
+    "relay disconnected",
+  );
+  assert.match(liveFeedMessage(""), /live feed stopped/);
+});
 test("new hero artwork is refreshed only from the expected asset host", async () => {
   const result = await loadStatHeroes(
     new AbortController().signal,
@@ -294,6 +329,26 @@ test("live requests target the fixed public endpoint with a streaming projection
       fetcher: async () => ({ ok: false, status: 429 }),
     }),
     /rate limited/,
+  );
+  await assert.rejects(
+    streamLiveMatch("123", {
+      signal: new AbortController().signal,
+      onEvent() {},
+      fetcher: async () =>
+        new Response(
+          JSON.stringify({ error: "Broadcast has not started yet" }),
+          { status: 502 },
+        ),
+    }),
+    /Valve’s spectator relay did not start/,
+  );
+  await assert.rejects(
+    streamLiveMatch("123", {
+      signal: new AbortController().signal,
+      onEvent() {},
+      fetcher: async () => new Response("", { status: 500 }),
+    }),
+    /API or spectator broadcast may be unavailable/,
   );
   await assert.rejects(
     streamLiveMatch("123", {

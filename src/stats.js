@@ -337,6 +337,40 @@ export function liveQueryUrl(id) {
   url.searchParams.set("query", LIVE_QUERY);
   return url.href;
 }
+// A relay refusal is different from an API/parser failure or a rate limit.
+// Both progress events and terminal errors may carry the relay's explanation.
+export function liveFeedMessage(data, event = "error") {
+  let value = data;
+  try {
+    value = JSON.parse(data);
+  } catch {
+    /* Some providers return plain text instead of a JSON event. */
+  }
+  const message = text(
+    value && typeof value === "object" ? value.error || value.message : value,
+    1000,
+  )
+    .replace(/^(?:live broadcast error:\s*)+/i, "")
+    .trim();
+  if (/broadcast has not started yet|relay never started/i.test(message))
+    return event === "status"
+      ? "Valve’s spectator relay has not started the broadcast yet. The API is retrying for up to a minute…"
+      : "Valve’s spectator relay did not start this broadcast during the connection attempt. Check that the game is still running and watchable in Deadlock. Reconnecting cannot guarantee access; finished-match statistics remain available after the game.";
+  if (/rate.?limit|too many requests/i.test(message))
+    return "The live API is rate limited. Wait before reconnecting; repeated attempts do not unlock a broadcast.";
+  if (
+    /schema|column.*not found|no field named|planning error|parser|parse error/i.test(
+      message,
+    )
+  )
+    return `The data provider could not decode the live feed. This does not establish that the match is private. ${message.slice(0, 220)}`;
+  return (
+    message.slice(0, 400) ||
+    (event === "status"
+      ? "Connecting to the spectator broadcast…"
+      : "The live feed stopped. Check the match ID and spectator access.")
+  );
+}
 export function reduceLiveRow(previous, row) {
   if (!row || typeof row !== "object") return previous;
   const entity = nonnegative(row.entity_index);
@@ -423,12 +457,20 @@ export async function streamLiveMatch(
     signal,
     headers: { Accept: "text/event-stream" },
   });
-  if (!response.ok)
+  if (!response.ok) {
+    const detail =
+      typeof response.text === "function"
+        ? await response.text().catch(() => "")
+        : "";
     throw Error(
-      response.status === 429
-        ? "The live API is rate limited. Wait before reconnecting."
-        : `The live match could not be opened (HTTP ${response.status}). The lobby may not be spectatable.`,
+      liveFeedMessage(
+        response.status === 429
+          ? "rate limited"
+          : detail ||
+              `The live feed could not be opened (HTTP ${response.status}). The API or spectator broadcast may be unavailable.`,
+      ),
     );
+  }
   if (
     !response.headers.get("content-type")?.includes("text/event-stream") ||
     !response.body
