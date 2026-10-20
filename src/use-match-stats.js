@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  liveFeedMessage,
   livePlayers,
   loadFinishedMatch,
   loadStatHeroes,
@@ -95,15 +96,7 @@ export function useMatchStats(source) {
           signal: controller.signal,
           onEvent: ({ event, data }) => {
             if (event === "error") {
-              let message =
-                "The live feed stopped. Check the match ID and spectator access.";
-              try {
-                const v = JSON.parse(data);
-                message = String(v.error || v.message || message).slice(0, 240);
-              } catch {
-                /* plain stream error */
-              }
-              throw Error(message);
+              throw Error(liveFeedMessage(data));
             }
             if (event === "end") {
               ended = true;
@@ -112,8 +105,7 @@ export function useMatchStats(source) {
             if (event === "status") {
               setResult((r) => ({
                 ...r,
-                message:
-                  "The broadcast is starting. Waiting for player updates…",
+                message: liveFeedMessage(data, "status"),
               }));
               return;
             }

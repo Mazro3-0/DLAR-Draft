@@ -52,7 +52,6 @@ function useStageScale() {
 function StatGraphic({
   match,
   panel,
-  event,
   time,
   status,
   stale = false,
@@ -67,20 +66,24 @@ function StatGraphic({
   const recorded = match?.mode === "finished" && time < match.duration;
   const stateLabel =
     status === "disconnected"
-      ? "DISCONNECTED"
+      ? "OFFLINE"
       : status === "error"
-        ? "CONNECTION LOST"
+        ? "FEED ERROR"
         : status === "ended"
           ? "FEED ENDED"
           : stale
-            ? "DATA DELAYED"
+            ? "DELAYED"
             : live
-              ? "LIVE FEED"
+              ? "LIVE · DELAY POSSIBLE"
               : recorded
                 ? `RECORDED · ${clock(time)}`
-                : "FINAL STATS";
+                : "FINAL";
   const row = (p, rank) => (
-    <div className={`stat-player stat-team-${p.team}`} key={p.id}>
+    <div
+      className={`stat-player stat-team-${p.team}`}
+      key={p.id}
+      title={`${panel.names[p.id] || p.name || `Player ${p.slot}`} · ${heroRoster[p.heroId]?.name || `Hero ${p.heroId}`} · ${panel.teamNames[p.team]}`}
+    >
       <span className="stat-rank">{String(rank + 1).padStart(2, "0")}</span>
       <HeroIcon key={p.heroId} heroId={p.heroId} hero={heroRoster[p.heroId]} />
       <div className="stat-player-identity">
@@ -90,11 +93,6 @@ function StatGraphic({
             heroRoster[p.heroId]?.name ||
             `Player ${p.slot}`}
         </strong>
-        <span>
-          {heroRoster[p.heroId]?.name || `Hero ${p.heroId}`}
-          <i> · </i>
-          {panel.teamNames[p.team]}
-        </span>
       </div>
       <b className="stat-value">{displayNumber(p[panel.metric])}</b>
       <span
@@ -113,28 +111,19 @@ function StatGraphic({
         aria-label={`${metric.label} broadcast panel`}
       >
         <header className="stat-box-header">
-          <div>
-            <span className="stat-kicker">
-              DEADLOCK AR <i>✦</i> {event || "MATCH STATISTICS"}
-            </span>
-            <h2>{panel.title || metric.label}</h2>
-          </div>
+          <h2 title={panel.title || metric.label}>
+            {panel.title || metric.label}
+          </h2>
           <span
             className={`stat-source-label ${live ? "live" : ""} ${stale || ["error", "ended", "disconnected"].includes(status) ? "delayed" : ""}`}
           >
             {stateLabel}
           </span>
         </header>
-        <div className="stat-box-subhead">
-          <span>{metric.unit}</span>
-          <span>
-            {rows.length} / 12 PLAYERS <i>·</i> #{match?.id || "—"}
-          </span>
-        </div>
         {unsupported ? (
           <div className="stat-broadcast-empty">
-            Permanent-buff counts are available for finished matches. Live
-            counts are awaiting verification.
+            Live permanent-buff counting is not implemented. Use a finished
+            match.
           </div>
         ) : rows.length ? (
           panel.layout === "teams" ? (
@@ -156,21 +145,6 @@ function StatGraphic({
             Waiting for player statistics
           </div>
         )}
-        <footer>
-          <span>
-            {live
-              ? "SOURCE BROADCAST MAY BE DELAYED"
-              : recorded
-                ? "RECORDED SAMPLES · NOT A LIVE FEED"
-                : `FINISHED MATCH · ${clock(match?.duration)}`}{" "}
-          </span>
-          <span>✦</span>
-          <span>
-            {rows.some((p) => p[panel.metric] === null)
-              ? "— = DATA UNAVAILABLE"
-              : "COMMUNITY TOURNAMENTS"}
-          </span>
-        </footer>
       </section>
     </div>
   );
@@ -343,9 +317,24 @@ export default function StatPanels({ config, active }) {
         )}
         <p className="stats-source-note">
           {sourceMode === "live"
-            ? "Live beta needs a spectatable game. The source can be delayed; an inaccessible private lobby will show an error. No automatic reconnect loop."
+            ? "Live beta reads Valve’s spectator broadcast through Deadlock API. The relay must be available, even for a spectatable lobby. Updates may be delayed. No automatic reconnect loop."
             : "Finished matches use saved results. The timeline previews recorded samples, not live updates."}
         </p>
+        {sourceMode === "live" && (
+          <p className="stats-source-note">
+            Damage, healing and net worth are connected. Live permanent-buff
+            counting is not implemented: the current player feed has no verified
+            pickup counter. A different parser still needs the same Valve
+            broadcast.{" "}
+            <a
+              href="https://github.com/demofusion/demofusion"
+              target="_blank"
+              rel="noreferrer"
+            >
+              About Demofusion ↗
+            </a>
+          </p>
+        )}
       </section>
       <div className="stats-template-heading">
         <div>
@@ -422,7 +411,6 @@ export default function StatPanels({ config, active }) {
               <StatGraphic
                 match={match}
                 panel={panel}
-                event={config.event}
                 time={effectiveTime}
                 status={result.status}
                 stale={stale}
@@ -493,9 +481,9 @@ export default function StatPanels({ config, active }) {
               value={panel.layout}
               onChange={(e) => update("layout", e.target.value)}
             >
-              <option value="boxes">Player boxes · 4 × 3</option>
-              <option value="teams">Two team columns</option>
-              <option value="ranking">Compact leaderboard</option>
+              <option value="boxes">Compact boxes · 4 × 3</option>
+              <option value="teams">Compact team columns</option>
+              <option value="ranking">Narrow leaderboard</option>
             </select>
           </Field>
           <div className="stats-control-pair">
@@ -570,8 +558,8 @@ export default function StatPanels({ config, active }) {
           ))}
           {unsupported && (
             <p className="stats-error">
-              Live buff counts are not verified yet. Use a finished match for
-              this template.
+              Live permanent-buff counting is not implemented. Use a finished
+              match for this template. Missing counts are never shown as zero.
             </p>
           )}
         </aside>
@@ -654,7 +642,7 @@ export default function StatPanels({ config, active }) {
       <p className="stats-footnote">
         Powered by Deadlock API · Statistics follow the source feed. Permanent
         buffs count permanent pickups only, across all levels; temporary
-        power-ups are excluded.
+        power-ups are excluded. — means data is unavailable.
       </p>
     </section>
   );
@@ -689,7 +677,6 @@ export function StatPanelOverlay() {
           <StatGraphic
             match={match}
             panel={linked.panel}
-            event={linked.event}
             time={linked.time ?? match.duration}
             status={result.status}
             stale={stale}
