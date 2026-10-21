@@ -88,9 +88,17 @@ export async function replayStream(id, file, signal) {
       !url.pathname.startsWith(`/1422450/${id}_`)
     )
       throw Error("Unexpected Valve replay URL.");
-    const response = await fetch(url, {
-      signal: AbortSignal.any([signal, AbortSignal.timeout(180000)]),
-    });
+    // Limit connection setup, not playback: a 1x replay can run for an hour.
+    const connection = new AbortController();
+    const timeout = setTimeout(() => connection.abort(), 30000);
+    let response;
+    try {
+      response = await fetch(url, {
+        signal: AbortSignal.any([signal, connection.signal]),
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
     if (!response.ok) throw Error(`Replay HTTP ${response.status}`);
     const reader = response.body.getReader();
     const first = await reader.read();

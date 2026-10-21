@@ -168,6 +168,9 @@ export function cleanSettings(
   return {
     delayMs: bounded(value.delayMs ?? previous.delayMs, 0, 120000, 0),
     names,
+    hudOrder: [...new Set(value.hudOrder ?? previous.hudOrder ?? [])]
+      .filter((id) => typeof id === "string" && /^\d{1,10}$/.test(id))
+      .slice(0, 12),
     hud: Object.fromEntries(
       Object.entries({
         x: [0, 1850],
