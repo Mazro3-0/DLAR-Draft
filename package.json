@@ -4,13 +4,17 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "start": "node collector/cloud-server.mjs",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "node --test",
     "preview:built": "node scripts/serve.mjs",
-    "update:heroes": "node scripts/update-heroes.mjs"
+    "update:heroes": "node scripts/update-heroes.mjs",
+    "collector": "node collector/server.mjs",
+    "collector:setup": "npm ci --prefix collector --ignore-scripts",
+    "collector:refresh": "node collector/refresh-catalog.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",
@@ -28,6 +32,6 @@
     "vite": "^8.3.0"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=24"
   }
 }

@@ -1,0 +1,57 @@
+import { StringTableType } from "deadem";
+import { playerFor } from "./extract.mjs";
+
+export function ultimateHit(demo, damage, catalog) {
+  const ability = catalog.find((a) => a.id === damage.abilityId);
+  if (
+    !ability ||
+    !(
+      (damage.damage ?? 0) > 0 ||
+      (damage.damageAbsorbed ?? 0) > 0 ||
+      (damage.healthLost ?? 0) > 0
+    )
+  )
+    return null;
+  const caster = playerFor(demo, demo.getEntity(damage.entindexAttacker));
+  const target = playerFor(demo, demo.getEntity(damage.entindexVictim));
+  if (!caster || !target || caster.team === target.team) return null;
+  return {
+    key: `${caster.id}:${target.id}:${ability.id}`,
+    casterId: caster.id,
+    targetId: target.id,
+    abilityId: ability.id,
+    kind: "hit",
+    durationMs: 1600,
+  };
+}
+export function ultimateEffects(demo, catalog) {
+  const table = demo.stringTableContainer.getByType(
+    StringTableType.ACTIVE_MODIFIERS,
+  );
+  const rows = [],
+    seen = new Set();
+  for (const entry of table?.getEntries() ?? []) {
+    const v = entry.value;
+    if (!v || v.entryType !== 1) continue;
+    const ability = catalog.find(
+      (a) =>
+        a.id === v.abilitySubclass && a.modifiers.includes(v.modifierSubclass),
+    );
+    if (!ability) continue;
+    const caster = playerFor(demo, demo.getEntityByHandle(v.caster));
+    const target = playerFor(demo, demo.getEntityByHandle(v.parent));
+    if (!caster || !target || caster.team === target.team) continue;
+    const key = `${v.parent}:${v.serialNumber}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    rows.push({
+      key,
+      casterId: caster.id,
+      targetId: target.id,
+      abilityId: ability.id,
+      kind: "effect",
+      duration: v.duration ?? null,
+    });
+  }
+  return rows;
+}
