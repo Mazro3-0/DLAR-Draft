@@ -9,7 +9,10 @@ export function enqueueCollectorState(queue, value, now, delay) {
   return queue.slice(-1300);
 }
 export function collectorEndpoint(path, id) {
-  const url = new URL(`/api/collector/${path}`, COLLECTOR_ORIGIN);
+  const url = new URL(
+    `/api/collector/${path}`,
+    globalThis.__DLAR_CLOUD__ ? window.location.origin : COLLECTOR_ORIGIN,
+  );
   if (id) url.searchParams.set("match", id);
   return url.href;
 }
@@ -30,6 +33,15 @@ export async function collectorRequest(path, id, value, signal) {
   return result;
 }
 export function collectorOverlayUrl(view, id, metric = "damage") {
+  if (globalThis.__DLAR_CLOUD__)
+    return new URL(
+      {
+        "collector-panel": "/obs/deadem",
+        "ultimate-hud": "/obs/ultimates",
+        scoreboard: "/obs/scoreboard",
+      }[view],
+      window.location.origin,
+    ).href;
   const url = new URL(COLLECTOR_ORIGIN);
   url.searchParams.set("view", view);
   url.searchParams.set("match", id);

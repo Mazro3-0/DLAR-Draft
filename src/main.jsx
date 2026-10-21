@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { StatPanelOverlay } from "./StatPanels.jsx";
 import { ProductionOverlay } from "./ProductionStudio.jsx";
+import CloudStudio from "./CloudStudio.jsx";
 
 const statsOverlay =
   new URLSearchParams(window.location.search).get("view") === "stats";
@@ -15,12 +16,16 @@ const productionOverlay = [
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    {productionOverlay ? (
-      <ProductionOverlay />
-    ) : statsOverlay ? (
-      <StatPanelOverlay />
-    ) : (
-      <App />
-    )}
+    <CloudStudio
+      legacy={
+        productionOverlay ? (
+          <ProductionOverlay />
+        ) : statsOverlay ? (
+          <StatPanelOverlay />
+        ) : (
+          <App />
+        )
+      }
+    />
   </StrictMode>,
 );

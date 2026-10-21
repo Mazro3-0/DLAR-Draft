@@ -27,7 +27,11 @@ export function useCollectorHealth(enabled = true) {
         .catch(() => {
           if (!abort.signal.aborted) {
             setHealth(null);
-            setError("Start the collector on this PC to connect.");
+            setError(
+              globalThis.__DLAR_CLOUD__
+                ? "Cloud collector unavailable. Reopen the studio to reconnect."
+                : "Start the collector on this PC to connect.",
+            );
           }
         });
     const start = setTimeout(poll, 0),

@@ -18,6 +18,9 @@ import {
 } from "./stats";
 import { StatGraphic } from "./StatPanels";
 import "./ProductionStudio.css";
+import { useWorkspace, useWorkspaceField } from "./workspace-context.js";
+import { diffFields } from "./workspace-model.js";
+import { cleanSettings } from "../collector/model.mjs";
 
 const roster = {
   ...Object.fromEntries(
@@ -38,7 +41,12 @@ function Portrait({ player }) {
     </span>
   );
 }
-function Hud({ session, catalog = [], calibration = false, delayed = false }) {
+export function Hud({
+  session,
+  catalog = [],
+  calibration = false,
+  delayed = false,
+}) {
   const [now, setNow] = useState(Date.now);
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 80);
@@ -114,7 +122,7 @@ function Hud({ session, catalog = [], calibration = false, delayed = false }) {
     </div>
   );
 }
-function Scoreboard({ result }) {
+export function Scoreboard({ result }) {
   if (!result)
     return (
       <div className="production-canvas scoreboard-empty">
@@ -280,10 +288,14 @@ function ObsLink({ view, id, metric, label }) {
   );
 }
 export default function ProductionStudio({ active, config }) {
-  const [id, setId] = useState(""),
+  const shared = useWorkspace();
+  const [id, setId] = useWorkspaceField(["deadem", "id"], ""),
     [mode, setMode] = useState("live"),
     [section, setSection] = useState("panels"),
-    [metric, setMetric] = useState("damage"),
+    [metric, setMetric] = useWorkspaceField(
+      ["deadem", "panel", "metric"],
+      "damage",
+    ),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
     [winner, setWinner] = useState("");
@@ -296,8 +308,17 @@ export default function ProductionStudio({ active, config }) {
     setBusy(true);
     setNotice("");
     try {
-      const state = await collectorRequest(path, id, value);
-      if (state.id) setId(state.id);
+      const payload =
+        shared && path === "settings" && session
+          ? {
+              operations: diffFields(
+                session.settings,
+                cleanSettings(value, session.settings),
+              ),
+            }
+          : value;
+      const state = await collectorRequest(path, id, payload);
+      if (state.id && !shared) setId(state.id);
       setNotice(
         path === "publish"
           ? "Scoreboard published. OBS now shows this reviewed snapshot."
@@ -345,9 +366,13 @@ export default function ProductionStudio({ active, config }) {
         <div>
           <span className="eyebrow">FROM FIRST FIGHT TO FINAL SCORE</span>
           <h1>
-            Live desk<span>✦</span>
+            Live stats · Deadem<span>✦</span>
           </h1>
-          <p>One game. Live numbers, ultimate hits, and a saved result.</p>
+          <p>
+            Custom collector: live stats, permanent buffs, ultimate indicators
+            and saved results. API stats offers an alternative feed for similar
+            panels.
+          </p>
         </div>
         <span className={`collector-badge ${health ? "online" : ""}`}>
           <i />
@@ -356,24 +381,32 @@ export default function ProductionStudio({ active, config }) {
       </div>
       {!health && (
         <div className="collector-setup">
-          <h2>Run your broadcast companion</h2>
+          <h2>
+            {shared
+              ? "Connecting to the cloud collector"
+              : "Run your broadcast companion"}
+          </h2>
           <p>
-            Open <strong>Start-Collector.cmd</strong> from the project on the
-            broadcast PC. Keep it running, then open the local Live desk below.
-            The companion saves results on that PC.
+            {shared ? (
+              "The collector runs on the hosted studio. No software is needed on the streaming PC. Check the connection or retry in a moment."
+            ) : (
+              <>
+                Open <strong>Start-Collector.cmd</strong> on the broadcast PC
+                and keep it running.
+              </>
+            )}
           </p>
-          <a
-            className="button primary"
-            href={`${COLLECTOR_ORIGIN}/?tab=live`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Open local Live desk ↗
-          </a>
-          <p>
-            {healthError} A browser permission may be needed when connecting
-            from the public website.
-          </p>
+          {!shared && (
+            <a
+              className="button primary"
+              href={`${COLLECTOR_ORIGIN}/?tab=live`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open local Live desk ↗
+            </a>
+          )}
+          <p>{healthError}</p>
         </div>
       )}
       <section className="production-card collector-connect">
@@ -483,6 +516,12 @@ export default function ProductionStudio({ active, config }) {
           {notice || error}
         </p>
       )}
+      {session?.storageError && (
+        <p className="production-notice" role="alert">
+          Storage write failed. Keep this studio open and download a backup from
+          OBS outputs before restarting the service.
+        </p>
+      )}
       {session && (
         <>
           <div className="production-tabs">
@@ -521,6 +560,18 @@ export default function ProductionStudio({ active, config }) {
                   </select>
                 </label>
               </div>
+              {shared && (
+                <button
+                  className="button secondary"
+                  onClick={() =>
+                    shared.update(["deadem", "visible"], (v) => !v)
+                  }
+                >
+                  {shared.data.deadem.visible
+                    ? "Hide stats on stream"
+                    : "Show stats on stream"}
+                </button>
+              )}
               <Preview label="Deadem stat panel preview">
                 <StatGraphic
                   match={match}
@@ -557,6 +608,18 @@ export default function ProductionStudio({ active, config }) {
           )}
           {section === "hud" && (
             <>
+              {shared && (
+                <button
+                  className="button secondary"
+                  onClick={() =>
+                    shared.update(["deadem", "hudVisible"], (v) => !v)
+                  }
+                >
+                  {shared.data.deadem.hudVisible
+                    ? "Hide HUD on stream"
+                    : "Show HUD on stream"}
+                </button>
+              )}
               <div className="production-section-heading">
                 <div>
                   <h2>Make every ultimate readable.</h2>
@@ -573,7 +636,7 @@ export default function ProductionStudio({ active, config }) {
               <section className="production-card">
                 <form
                   className="production-calibration"
-                  key={id}
+                  key={`${id}:${JSON.stringify(session.settings.hud)}:${session.settings.delayMs}`}
                   onSubmit={(e) => {
                     e.preventDefault();
                     const values = Object.fromEntries(
@@ -701,6 +764,18 @@ export default function ProductionStudio({ active, config }) {
           )}
           {section === "scoreboard" && (
             <>
+              {shared && (
+                <button
+                  className="button secondary"
+                  onClick={() =>
+                    shared.update(["scoreboard", "visible"], (v) => !v)
+                  }
+                >
+                  {shared.data.scoreboard.visible
+                    ? "Hide scoreboard on stream"
+                    : "Show scoreboard on stream"}
+                </button>
+              )}
               <div className="production-section-heading">
                 <div>
                   <h2>Ready when the game ends.</h2>
@@ -800,6 +875,7 @@ export default function ProductionStudio({ active, config }) {
                     <Portrait player={p} />
                     <span>{roster[p.heroId]?.name || `Hero ${p.heroId}`}</span>
                     <input
+                      key={`${p.id}:${session.settings.names[p.id] || p.name}`}
                       defaultValue={session.settings.names[p.id] || p.name}
                       maxLength="48"
                       aria-label={`Display name for ${p.name}`}
