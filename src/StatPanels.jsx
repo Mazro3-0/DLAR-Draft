@@ -49,7 +49,7 @@ function useStageScale() {
   }, []);
   return [ref, scale];
 }
-function StatGraphic({
+export function StatGraphic({
   match,
   panel,
   time,
@@ -62,22 +62,26 @@ function StatGraphic({
   const metric = METRICS[panel.metric],
     max = Math.max(1, ...rows.map((p) => p[panel.metric] || 0));
   const live = match?.mode === "live",
-    unsupported = live && !metric.live;
+    unsupported = live && !metric.live && match?.provider !== "deadem";
   const recorded = match?.mode === "finished" && time < match.duration;
   const stateLabel =
-    status === "disconnected"
-      ? "OFFLINE"
-      : status === "error"
-        ? "FEED ERROR"
-        : status === "ended"
-          ? "FEED ENDED"
-          : stale
-            ? "DELAYED"
-            : live
-              ? "LIVE · DELAY POSSIBLE"
-              : recorded
-                ? `RECORDED · ${clock(time)}`
-                : "FINAL";
+    status === "loading" || status === "connecting"
+      ? "CONNECTING"
+      : status === "finished" && match?.provider === "deadem"
+        ? "CAPTURED"
+        : status === "disconnected"
+          ? "OFFLINE"
+          : status === "error"
+            ? "FEED ERROR"
+            : status === "ended"
+              ? "FEED ENDED"
+              : stale
+                ? "DELAYED"
+                : live
+                  ? "LIVE · DELAY POSSIBLE"
+                  : recorded
+                    ? `RECORDED · ${clock(time)}`
+                    : "FINAL";
   const row = (p, rank) => (
     <div
       className={`stat-player stat-team-${p.team}`}
@@ -122,8 +126,8 @@ function StatGraphic({
         </header>
         {unsupported ? (
           <div className="stat-broadcast-empty">
-            Live permanent-buff counting is not implemented. Use a finished
-            match.
+            Use Live desk for Deadem permanent-buff panels, or load a finished
+            match here.
           </div>
         ) : rows.length ? (
           panel.layout === "teams" ? (
@@ -322,16 +326,12 @@ export default function StatPanels({ config, active }) {
         </p>
         {sourceMode === "live" && (
           <p className="stats-source-note">
-            Damage, healing and net worth are connected. Live permanent-buff
-            counting is not implemented: the current player feed has no verified
-            pickup counter. A different parser still needs the same Valve
-            broadcast.{" "}
-            <a
-              href="https://github.com/demofusion/demofusion"
-              target="_blank"
-              rel="noreferrer"
-            >
-              About Demofusion ↗
+            Damage, healing and net worth are connected here. For live permanent
+            buffs, ultimate indicators, and a post-match scoreboard, use Live
+            desk with the Deadem collector. Both methods require an available
+            Valve broadcast.{" "}
+            <a href="/?tab=live" target="_blank" rel="noreferrer">
+              Open Live desk ↗
             </a>
           </p>
         )}
@@ -558,8 +558,8 @@ export default function StatPanels({ config, active }) {
           ))}
           {unsupported && (
             <p className="stats-error">
-              Live permanent-buff counting is not implemented. Use a finished
-              match for this template. Missing counts are never shown as zero.
+              Use Live desk for Deadem permanent-buff panels, or load a finished
+              match here. Missing counts are never shown as zero.
             </p>
           )}
         </aside>

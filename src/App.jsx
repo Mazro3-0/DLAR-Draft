@@ -16,6 +16,7 @@ import {
 } from "./draft";
 import "./App.css";
 import StatPanels from "./StatPanels";
+import ProductionStudio from "./ProductionStudio";
 
 const roster = Object.fromEntries(heroes.map((h) => [h.id, h]));
 const params = new URLSearchParams(window.location.search);
@@ -546,7 +547,9 @@ export default function App() {
   const [toast, setToast] = useState("");
   const [activity, setActivity] = useState([]);
   const [tab, setTab] = useState(
-    params.get("tab") === "stats" ? "stats" : "studio",
+    ["stats", "live"].includes(params.get("tab"))
+      ? params.get("tab")
+      : "studio",
   );
   const [guide, setGuide] = useState(false);
   const [picker, setPicker] = useState(null);
@@ -851,6 +854,13 @@ export default function App() {
             Stat panels<span>02</span>
           </button>
           <button
+            className={tab === "live" ? "selected" : ""}
+            onClick={() => setTab("live")}
+          >
+            <Icon name="play" />
+            Live desk<span>03</span>
+          </button>
+          <button
             className={tab === "settings" ? "selected" : ""}
             onClick={() => setTab("settings")}
           >
@@ -887,9 +897,10 @@ export default function App() {
           </span>
         </header>
         <div
-          className={`workspace-content${tab === "stats" ? " stats-tab" : ""}`}
+          className={`workspace-content${tab === "stats" ? " stats-tab" : tab === "live" ? " production-tab" : ""}`}
         >
           <StatPanels config={config} active={tab === "stats"} />
+          <ProductionStudio config={config} active={tab === "live"} />
           <div className="page-heading">
             <div>
               <span className="eyebrow">THE BROADCAST STARTS HERE</span>
