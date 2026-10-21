@@ -26,3 +26,9 @@ collector/*.dem*
 *.sw?
 
 runtime/
+.dlar-cloud/
+.env
+.env.*
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

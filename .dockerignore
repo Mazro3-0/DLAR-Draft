@@ -1,0 +1,13 @@
+.git
+node_modules
+collector/node_modules
+dist
+.dlar-collector
+.dlar-cloud
+.env
+.env.*
+*.local
+runtime
+*.dem*
+*.zip
+*.sqlite*
