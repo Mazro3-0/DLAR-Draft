@@ -10,7 +10,10 @@
     "preview": "vite preview",
     "test": "node --test",
     "preview:built": "node scripts/serve.mjs",
-    "update:heroes": "node scripts/update-heroes.mjs"
+    "update:heroes": "node scripts/update-heroes.mjs",
+    "collector": "node collector/server.mjs",
+    "collector:setup": "npm ci --prefix collector --ignore-scripts",
+    "collector:refresh": "node collector/refresh-catalog.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

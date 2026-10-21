@@ -34,6 +34,14 @@ The studio starts muted independently of the broadcast. Choose **Load demo → P
 
 The 42 current heroes have selection clips. Normal cards are bundled; gloat and critical variants use the Deadlock API asset bucket, and voices use game-audio libraries at [Pauselock](https://pauselock.net/voicelines) and [VLViewer](https://deadlock.vlviewer.com/). These remote assets require internet access. Failed variant images fall back to the bundled normal card; failed audio clips are skipped. The hero refresh script preserves existing voice mappings and reports new heroes that need selection clips.
 
+## Deadem Live desk and post-match scoreboard
+
+Open **Live desk** for the independent Deadem collector, live permanent buffs, target-specific ultimate badges, and post-match result review. Run **Start-Collector.cmd** on the broadcast PC and open **http://127.0.0.1:8766/?tab=live**. The portable Windows release includes the runtime, dependencies, and built studio. The existing Vercel website remains the public frontend; continuous collection and saved results run locally.
+
+The collector saves all twelve players on game over, retains results across restarts, and provides an admin-published scoreboard OBS view. A lost relay is explicitly marked as interrupted and never treated as a game ending. Metadata verification is optional and updates only the review copy until republished. See [collector setup, coverage, and operation](collector/README.md).
+
+The sections below describe the older hosted-stat workflow, which remains available in **Stat panels**. Its historical permanent-buff limitation is resolved by the separate Deadem Live desk.
+
 ## Stat panels
 
 Open **Stat panels**, enter a Deadlock match ID, and choose **Finished match** or **Live match · beta**. Finished custom match **120513539** was verified: 12 players, 42:05 duration, 651,398 total hero damage and 322 permanent pickups. Source data comes from the [Deadlock API](https://api.deadlock-api.com/openapi.json). Profile lookup uses display names only; real names, locations, friends and other profile fields are discarded.
