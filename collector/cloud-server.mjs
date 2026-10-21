@@ -1,0 +1,522 @@
+import http from "node:http";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { readFile } from "node:fs/promises";
+import { BroadcastDatabase } from "./database.mjs";
+import { AdminAuth } from "./auth.mjs";
+import { CollectorEngine } from "./engine.mjs";
+import { SharedFeeds } from "./feeds.mjs";
+import {
+  matchId,
+  broadcastUrl,
+  cleanSettings,
+  publishResult,
+} from "./model.mjs";
+import { normalizeMetadata, playersAt } from "../src/stats.js";
+import {
+  patchWorkspace,
+  applyOperations,
+  OUTPUTS,
+} from "../src/workspace-model.js";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const types = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript",
+  ".css": "text/css",
+  ".json": "application/json",
+  ".png": "image/png",
+  ".webp": "image/webp",
+  ".svg": "image/svg+xml",
+  ".woff2": "font/woff2",
+  ".ttf": "font/ttf",
+  ".mp3": "audio/mpeg",
+};
+function json(res, code, data) {
+  res.writeHead(code, {
+    "Content-Type": "application/json",
+    "Cache-Control": "no-store",
+  });
+  res.end(JSON.stringify(data));
+}
+async function body(req) {
+  if (!req.headers["content-type"]?.startsWith("application/json"))
+    throw Error("JSON request required.");
+  const chunks = [];
+  let size = 0;
+  for await (const chunk of req) {
+    size += chunk.length;
+    if (size > 2000000) throw Error("Request too large.");
+    chunks.push(chunk);
+  }
+  return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
+}
+export async function createBroadcastServer(options = {}) {
+  const port = Number(
+    options.port ?? process.env.PORT ?? process.env.DLAR_COLLECTOR_PORT ?? 8766,
+  );
+  const directory =
+    options.directory ||
+    process.env.DLAR_DATA_DIR ||
+    path.join(root, ".dlar-cloud");
+  const origin =
+    options.origin ||
+    process.env.PUBLIC_ORIGIN ||
+    (process.env.RAILWAY_PUBLIC_DOMAIN
+      ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+      : `http://127.0.0.1:${port}`);
+  const hosted = Boolean(
+    process.env.PORT ||
+    process.env.RAILWAY_PROJECT_ID ||
+    process.env.DLAR_CLOUD === "1" ||
+    options.hosted,
+  );
+  const password = options.password ?? process.env.ADMIN_PASSWORD;
+  const trusted = !hosted && !password;
+  const store = new BroadcastDatabase(directory);
+  await store.load();
+  let auth;
+  try {
+    auth = new AdminAuth(
+      store.db,
+      password,
+      origin.startsWith("https:"),
+      trusted,
+    );
+  } catch (e) {
+    store.close();
+    throw e;
+  }
+  const catalog = JSON.parse(
+    await readFile(new URL("./data/ultimates.json", import.meta.url), "utf8"),
+  );
+  const clients = new Set();
+  let lastBroadcast = 0,
+    pendingBroadcast = null;
+  const session = () => store.sessions.get(store.workspace.deadem.id) || null;
+  function output(channel) {
+    const w = store.workspace,
+      s = session();
+    if (channel === "draft") return { config: w.config, draft: w.draft };
+    if (channel === "live-events")
+      return { config: w.config, apiStats: w.apiStats };
+    if (channel === "scoreboard")
+      return {
+        visible: w.scoreboard.visible,
+        scoreboard: store.sessions.get(w.scoreboard.matchId)?.published || null,
+      };
+    // Exclude archived/published copies and branding images from frequent live messages.
+    const light = s
+      ? {
+          version: 1,
+          id: s.id,
+          mode: s.mode,
+          status: s.status,
+          match: s.result?.match || s.match,
+          updatedAt: s.updatedAt,
+          settings: s.settings,
+          effects: channel === "ultimates" ? s.effects : [],
+          recentHits: channel === "ultimates" ? s.recentHits : [],
+          ended: Boolean(s.result),
+        }
+      : null;
+    return {
+      session: light,
+      panel: {
+        ...w.deadem.panel,
+        names: s?.settings.names || {},
+        teamNames: w.config.teams.map((t) => t.name),
+      },
+      visible: channel === "ultimates" ? w.deadem.hudVisible : w.deadem.visible,
+    };
+  }
+  function send(client, data) {
+    if (client.res.writableLength > 2000000) {
+      client.res.destroy();
+      return;
+    }
+    client.res.write(`data: ${JSON.stringify(data)}\n\n`);
+  }
+  function changed(section = "workspace") {
+    for (const c of clients) {
+      if (c.kind === "workspace" && section !== "collector")
+        send(c, store.workspace);
+      if (c.kind === "collector" && c.id === store.workspace.deadem.id)
+        send(c, session());
+      if (
+        c.kind === "collector" &&
+        section === "collector" &&
+        c.id !== store.workspace.deadem.id
+      )
+        send(c, store.sessions.get(c.id) || null);
+      if (c.kind !== "output") continue;
+      const relevant =
+        section === "workspace" ||
+        (section === "draft" && c.channel === "draft") ||
+        (section === "apiStats" && c.channel === "live-events") ||
+        (section === "scoreboard" && c.channel === "scoreboard") ||
+        (section === "collector" &&
+          ["deadem", "ultimates"].includes(c.channel));
+      if (relevant) send(c, output(c.channel));
+    }
+  }
+  const collector = new CollectorEngine(store, () => {
+    // Full player snapshots and hit notices share a bounded 10 Hz stream.
+    if (Date.now() - lastBroadcast >= 100) {
+      lastBroadcast = Date.now();
+      changed("collector");
+    } else if (!pendingBroadcast)
+      pendingBroadcast = setTimeout(() => {
+        pendingBroadcast = null;
+        lastBroadcast = Date.now();
+        changed("collector");
+      }, 100);
+  });
+  const feeds = new SharedFeeds(store, changed);
+  function events(req, res, client, initial) {
+    res.writeHead(200, {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      "X-Accel-Buffering": "no",
+      Connection: "keep-alive",
+    });
+    const c = { ...client, res };
+    clients.add(c);
+    send(c, initial);
+    const beat = setInterval(() => {
+      if (!res.destroyed) res.write(": heartbeat\n\n");
+    }, 15000);
+    beat.unref();
+    res.on("close", () => {
+      clearInterval(beat);
+      clients.delete(c);
+    });
+  }
+  const server = http.createServer(async (req, res) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Referrer-Policy", "same-origin");
+    try {
+      const url = new URL(req.url, origin),
+        method = req.method;
+      if (
+        ["POST", "PUT", "PATCH", "DELETE"].includes(method) &&
+        req.headers.origin !== origin
+      ) {
+        json(res, 403, {
+          error: "Open the admin dashboard on its configured website address.",
+        });
+        return;
+      }
+      if (url.pathname === "/healthz") {
+        json(res, 200, { ok: true });
+        return;
+      }
+      if (url.pathname === "/api/auth" && method === "GET") {
+        json(res, 200, {
+          cloud: true,
+          authenticated: auth.authenticated(req),
+          trustedLocal: trusted,
+        });
+        return;
+      }
+      if (url.pathname === "/api/login" && method === "POST") {
+        const v = await body(req);
+        auth.login(req, res, v.password);
+        json(res, 200, { authenticated: true });
+        return;
+      }
+      if (url.pathname === "/api/logout" && method === "POST") {
+        await body(req);
+        auth.logout(req, res);
+        json(res, 200, { authenticated: false });
+        return;
+      }
+      if (
+        url.pathname === "/api/broadcast" ||
+        url.pathname === "/api/broadcast/events"
+      ) {
+        const channel = url.searchParams.get("channel");
+        if (method !== "GET" || !Object.hasOwn(OUTPUTS, channel)) {
+          json(res, 404, { error: "Unknown broadcast output." });
+          return;
+        }
+        if (url.pathname.endsWith("/events"))
+          events(req, res, { kind: "output", channel }, output(channel));
+        else json(res, 200, output(channel));
+        return;
+      }
+      if (url.pathname.startsWith("/api/")) {
+        if (!auth.authenticated(req)) {
+          json(res, 401, { error: "Sign in to manage the shared broadcast." });
+          return;
+        }
+        if (url.pathname === "/api/backup" && method === "GET") {
+          res.setHeader(
+            "Content-Disposition",
+            'attachment; filename="deadlock-ar-broadcast-backup.json"',
+          );
+          json(res, 200, {
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            workspace: store.workspace,
+            matches: [...store.sessions.values()],
+          });
+          return;
+        }
+        if (url.pathname === "/api/workspace" && method === "GET") {
+          json(res, 200, store.workspace);
+          return;
+        }
+        if (url.pathname === "/api/workspace/events" && method === "GET") {
+          events(req, res, { kind: "workspace" }, store.workspace);
+          return;
+        }
+        if (url.pathname === "/api/workspace" && method === "POST") {
+          const v = await body(req);
+          if (!/^[a-f0-9-]{36}$/i.test(v.id || ""))
+            throw Error("Invalid update identifier.");
+          if (!store.hasPatch(v.id)) {
+            const next = patchWorkspace(store.workspace, v.operations);
+            if (next.deadem.id && !store.sessions.has(next.deadem.id))
+              throw Error("Choose a saved or collected game.");
+            store.applyPatch(v.id, next);
+            changed();
+          }
+          json(res, 200, store.workspace);
+          return;
+        }
+        if (url.pathname === "/api/draft/connect" && method === "POST") {
+          feeds.connectDraft(await body(req));
+          json(res, 200, store.workspace);
+          return;
+        }
+        if (url.pathname === "/api/draft/manual" && method === "POST") {
+          const v = await body(req),
+            draft = store.workspace.draft;
+          if (draft.mode === "live")
+            throw Error("Switch to manual mode before editing picks.");
+          const step = draft.snapshot.steps.find((s) => s.id === v.stepId);
+          if (
+            !step ||
+            (v.heroId !== null && !catalog.some((h) => h.heroId === v.heroId))
+          )
+            throw Error("Choose a valid hero slot.");
+          if (
+            v.heroId &&
+            draft.snapshot.steps.some(
+              (s) => s.id !== step.id && s.heroId === v.heroId,
+            )
+          )
+            throw Error("That hero is already selected.");
+          step.heroId = v.heroId;
+          store.workspace.revision++;
+          store.saveWorkspace();
+          changed("draft");
+          json(res, 200, store.workspace);
+          return;
+        }
+        if (url.pathname === "/api/live-events/start" && method === "POST") {
+          feeds.startApi(await body(req));
+          json(res, 200, store.workspace);
+          return;
+        }
+        if (url.pathname === "/api/live-events/stop" && method === "POST") {
+          await body(req);
+          feeds.stopApi();
+          json(res, 200, store.workspace);
+          return;
+        }
+        if (url.pathname === "/api/collector/health") {
+          json(res, 200, {
+            version: 1,
+            cloud: true,
+            activeId: collector.activeId,
+            running: Boolean(collector.worker),
+            catalog,
+            games: [...store.sessions.values()].map((s) => ({
+              id: s.id,
+              status: s.status,
+              mode: s.mode,
+              published: Boolean(s.published),
+              ended: Boolean(s.result),
+            })),
+          });
+          return;
+        }
+        if (url.pathname === "/api/collector/start" && method === "POST") {
+          const v = await body(req),
+            id = matchId(v.id),
+            mode = v.mode === "replay" ? "replay" : "live";
+          const s = collector.start({
+            id,
+            mode,
+            broadcastUrl: broadcastUrl(v.broadcastUrl, id),
+            replaySpeed: [1, 4, 16, 32].includes(Number(v.replaySpeed))
+              ? Number(v.replaySpeed)
+              : 16,
+            replayFrom: Math.max(0, Math.min(7200, Number(v.replayFrom) || 0)),
+          });
+          store.workspace.deadem.id = id;
+          store.workspace.revision++;
+          store.saveWorkspace();
+          changed();
+          json(res, 200, s);
+          return;
+        }
+        if (url.pathname === "/api/collector/stop" && method === "POST") {
+          await body(req);
+          await collector.stop();
+          json(res, 200, { stopped: true });
+          return;
+        }
+        const id = matchId(url.searchParams.get("match")),
+          s = store.sessions.get(id);
+        if (!s) {
+          json(res, 404, { error: "This game has not been collected." });
+          return;
+        }
+        if (url.pathname === "/api/collector/state" && method === "GET") {
+          json(res, 200, s);
+          return;
+        }
+        if (url.pathname === "/api/collector/events" && method === "GET") {
+          events(req, res, { kind: "collector", id }, s);
+          return;
+        }
+        if (url.pathname === "/api/collector/settings" && method === "POST") {
+          const value = await body(req);
+          s.settings = cleanSettings(
+            value.operations
+              ? applyOperations(s.settings, value.operations)
+              : value,
+            s.settings,
+          );
+          await store.save(s);
+          changed("collector");
+          json(res, 200, s);
+          return;
+        }
+        if (url.pathname === "/api/collector/publish" && method === "POST") {
+          publishResult(s, await body(req));
+          await store.save(s);
+          store.workspace.scoreboard.matchId = id;
+          store.workspace.revision++;
+          store.saveWorkspace();
+          changed("scoreboard");
+          json(res, 200, s);
+          return;
+        }
+        if (url.pathname === "/api/collector/verify" && method === "POST") {
+          await body(req);
+          if (!s.result)
+            throw Error("Wait for a game-over signal before verifying.");
+          const upstream = await fetch(
+            `https://api.deadlock-api.com/v1/matches/${id}/metadata?is_custom=true`,
+            { signal: AbortSignal.timeout(30000) },
+          );
+          if (!upstream.ok)
+            throw Error(
+              `Finished metadata unavailable (HTTP ${upstream.status}). Captured results retained.`,
+            );
+          const raw = await upstream.json(),
+            normalized = normalizeMetadata(raw, id);
+          const players = playersAt(normalized, normalized.duration).map(
+            (p) => ({
+              ...p,
+              name:
+                s.match?.players.find((old) => old.id === p.id)?.name || p.name,
+            }),
+          );
+          const ids = (p) =>
+            p
+              .map((v) => v.id)
+              .sort()
+              .join(",");
+          if (ids(players) !== ids(s.result.match.players))
+            throw Error("Metadata roster does not match the collected game.");
+          const winner = raw.match_info?.winning_team;
+          s.result = {
+            ...s.result,
+            match: {
+              ...s.result.match,
+              duration: normalized.duration,
+              players,
+              complete: true,
+            },
+            winner: [0, 1].includes(winner) ? winner : s.result.winner,
+            verification: "metadata",
+            verifiedAt: Date.now(),
+          };
+          await store.save(s);
+          changed("collector");
+          json(res, 200, s);
+          return;
+        }
+        json(res, 404, { error: "Unknown endpoint." });
+        return;
+      }
+      if (method !== "GET" && method !== "HEAD") {
+        res.writeHead(405).end();
+        return;
+      }
+      const pathname = decodeURIComponent(url.pathname),
+        base = options.staticDirectory || path.join(root, "dist");
+      const spa = pathname === "/" || Object.values(OUTPUTS).includes(pathname);
+      const target = path.resolve(base, "." + (spa ? "/index.html" : pathname));
+      if (!target.startsWith(base + path.sep)) {
+        res.writeHead(404).end();
+        return;
+      }
+      const data = await readFile(target).catch(() => null);
+      if (!data) {
+        res.writeHead(404).end("Page not found.");
+        return;
+      }
+      res.writeHead(200, {
+        "Content-Type":
+          types[path.extname(target)] || "application/octet-stream",
+        "Cache-Control": pathname.startsWith("/assets/")
+          ? "public, max-age=31536000, immutable"
+          : "no-cache",
+      });
+      res.end(method === "HEAD" ? undefined : data);
+    } catch (e) {
+      if (!res.headersSent)
+        json(res, e.status || 400, {
+          error: e.message,
+          ...(e.status === 409 ? { workspace: store.workspace } : {}),
+        });
+      else res.destroy();
+    }
+  });
+  server.requestTimeout = 20000;
+  const shutdown = async () => {
+    feeds.stop();
+    await collector.stop();
+    if (pendingBroadcast) clearTimeout(pendingBroadcast);
+    store.saveWorkspace();
+    for (const c of clients) c.res.destroy();
+    await new Promise((resolve) => server.close(resolve));
+    store.close();
+  };
+  return {
+    server,
+    store,
+    collector,
+    feeds,
+    shutdown,
+    origin,
+    host: hosted ? "0.0.0.0" : "127.0.0.1",
+    port,
+  };
+}
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const app = await createBroadcastServer();
+  app.server.listen(app.port, app.host, () =>
+    console.log(
+      `Deadlock AR Broadcast Studio listening on ${app.host}:${app.port}`,
+    ),
+  );
+  for (const signal of ["SIGINT", "SIGTERM"])
+    process.once(signal, () => app.shutdown().then(() => process.exit(0)));
+}
